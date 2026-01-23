@@ -21,6 +21,13 @@ $lang_translator['langtype'] = 'lang_module';
 
 $lang_module['main'] = 'Trang chính Workman';
 $lang_module['add'] = 'Thêm mới Workman';
+$lang_module['title'] = 'Tiêu đề';
+$lang_module['description'] = 'Mô tả';
+$lang_module['status'] = 'Trạng thái';
+$lang_module['priority'] = 'Độ ưu tiên';
+$lang_module['due_date'] = 'Ngày hết hạn';
+$lang_module['save'] = 'Lưu lại';
+$lang_module['error_required_title'] = 'Lỗi: Tiêu đề không được để trống';
 
 
 // Status
