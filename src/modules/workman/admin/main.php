@@ -33,14 +33,27 @@ if ($nv_Request->isset_request('delete_id', 'get')) {
 // Thiết lập đường dẫn Template
 $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
 
-// Lấy dữ liệu từ database
+// Phân trang
+// Phân trang
+$page = $nv_Request->get_int('page', 'get', 1);
+$per_page = 3;
+$base_url = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&" . NV_NAME_VARIABLE . "=" . $module_name . "&" . NV_OP_VARIABLE . "=main";
+
+// Đếm tổng số bản ghi
+$sql = 'SELECT COUNT(*) FROM ' . $db_config['prefix'] . '_' . $module_data;
+$num_items = $db->query($sql)->fetchColumn();
+
+// Lấy dữ liệu từ database với LIMIT và OFFSET
 try {
-    $sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . ' ORDER BY id DESC';
+    $offset = ($page - 1) * $per_page;
+    $sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . ' ORDER BY id DESC LIMIT ' . $per_page . ' OFFSET ' . $offset;
     $result = $db->query($sql);
 } catch (Exception $e) {
     echo "Database error: " . $e->getMessage();
     exit();
 }
+
+$generate_page = nv_generate_page($base_url, $num_items, $per_page, $page);
 
 while ($row = $result->fetch()) {
 
@@ -91,6 +104,7 @@ $url_add = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DA
 
 $xtpl->assign('LANG', $nv_Lang->getGlobal());
 $xtpl->assign('URL_ADD', $url_add);
+$xtpl->assign('GENERATE_PAGE', $generate_page);
 
 $xtpl->parse('main');
 $contents = $xtpl->text('main');

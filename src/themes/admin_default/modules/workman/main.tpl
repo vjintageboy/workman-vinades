@@ -53,5 +53,9 @@
             </tbody>
         </table>
     </div>
+    
+    <div class="text-center">
+        {GENERATE_PAGE}
+    </div>
 </div>
 <!-- END: main -->
