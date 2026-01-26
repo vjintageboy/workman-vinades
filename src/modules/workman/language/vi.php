@@ -43,3 +43,4 @@ $lang_module['priority_class_urgent'] = 'danger';
 $lang_module['priority_class_normal'] = 'info';
 
 
+

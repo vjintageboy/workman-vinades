@@ -13,7 +13,7 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 }
 
 $page_title = $nv_Lang->getModule('add');
-
+// echo $global_config['admin_theme'];
 // Khởi tạo data
 $request_data = [
     'title' => '',
@@ -36,10 +36,22 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
     if (empty($request_data['title'])) {
         $error = $nv_Lang->getModule('error_required_title');
     } else {
-        // Thực hiện lưu dữ liệu vào database ở đây
-        // ...
-        // Redirect sau khi lưu thành công
-        // nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+        $sql = 'INSERT INTO ' . $db_config['prefix'] . '_' . $module_data . ' (title, description, status, priority, due_date) VALUES (
+            ' . $db->quote($request_data['title']) . ',
+            ' . $db->quote($request_data['description']) . ',
+            ' . $db->quote($request_data['status']) . ',
+            ' . $db->quote($request_data['priority']) . ',
+            ' . $db->quote($request_data['due_date']) . '
+        )';
+
+        $ex = $db->exec($sql);
+        if ($ex == 1) {
+            $nv_Cache->delMod($module_name);
+            nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+        } else {
+            $error = 'Error saving data';
+        }
+        die();
     }
 }
 

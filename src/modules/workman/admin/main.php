@@ -15,30 +15,34 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 
 $page_title = $nv_Lang->getModule('main');
 
+// Xử lý xoá
+if ($nv_Request->isset_request('delete_id', 'get')) {
+    $id = $nv_Request->get_int('id', 'get', 0);
+    if ($id > 0) {
+        try {
+            $sql = 'DELETE FROM ' . $db_config['prefix'] . '_' . $module_data . ' WHERE id=' . $id;
+            $db->exec($sql);
+            $nv_Cache->delMod($module_name);
+            nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+        } catch (Exception $e) {
+            trigger_error($e->getMessage());
+        }
+    }
+}
+
 // Thiết lập đường dẫn Template
 $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
 
-// Dữ liệu mẫu (Sau này thay bằng query database)
-$rows = [
-    [
-        'id' => 1,
-        'title' => 'Thiết kế database',
-        'description' => 'Thiết kế bảng công việc',
-        'status' => 'done',
-        'priority' => 'urgent', // Đã đổi để test màu
-        'due_date' => time() - 3600
-    ],
-    [
-        'id' => 2,
-        'title' => 'Viết giao diện admin',
-        'description' => 'XTemplate cho admin',
-        'status' => 'doing',
-        'priority' => 'normal',
-        'due_date' => time() + 7200
-    ]
-];
+// Lấy dữ liệu từ database
+try {
+    $sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . ' ORDER BY id DESC';
+    $result = $db->query($sql);
+} catch (Exception $e) {
+    echo "Database error: " . $e->getMessage();
+    exit();
+}
 
-foreach ($rows as $row) {
+while ($row = $result->fetch()) {
 
     // 1. Xử lý Trạng thái (Text và Class)
     $st_text_key = 'status_' . $row['status'];
@@ -60,8 +64,10 @@ foreach ($rows as $row) {
     $priority_class_lang = $nv_Lang->getModule($pr_class_key);
     $priority_class = !empty($priority_class_lang) ? $priority_class_lang : 'info';
     
-    // 3. Tạo link sửa
-    $url_edit = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name . "&amp;" . NV_OP_VARIABLE . "=edit&amp;id=" . $row['id'];
+    // 3. Tạo link sửa và link xóa
+    $base_url = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name;
+    $url_edit = $base_url . "&amp;" . NV_OP_VARIABLE . "=add&amp;id=" . $row['id'];
+    $url_delete = $base_url . "&amp;" . NV_OP_VARIABLE . "=main&amp;delete_id=1&amp;id=" . $row['id'];
     
     $xtpl->assign('ROW', [
         'id' => $row['id'],
@@ -71,16 +77,20 @@ foreach ($rows as $row) {
         'status_class' => $status_class,
         'priority_text' => $priority_text,
         'priority_class' => $priority_class,
-        'due_date' => nv_date('d/m/Y H:i', $row['due_date']),
+        'due_date' => $row['due_date'],
         'url_edit' => $url_edit,
+        'url_delete' => $url_delete,
     ]);
 
     $xtpl->parse('main.row'); 
 }
 
 // Đường dẫn link xóa
-$url_delete = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name . "&amp;" . NV_OP_VARIABLE . "=delete";
-$xtpl->assign('URL_DELETE', $url_delete);
+// Assign additional variables
+$url_add = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&" . NV_NAME_VARIABLE . "=" . $module_name . "&" . NV_OP_VARIABLE . "=add";
+
+$xtpl->assign('LANG', $nv_Lang->getGlobal());
+$xtpl->assign('URL_ADD', $url_add);
 
 $xtpl->parse('main');
 $contents = $xtpl->text('main');
