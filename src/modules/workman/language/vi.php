@@ -21,6 +21,7 @@ $lang_translator['langtype'] = 'lang_module';
 
 $lang_module['main'] = 'Trang chính Workman';
 $lang_module['add'] = 'Thêm mới Workman';
+$lang_module['edit'] = 'Sửa công việc';
 $lang_module['title'] = 'Tiêu đề';
 $lang_module['description'] = 'Mô tả';
 $lang_module['status'] = 'Trạng thái';
@@ -33,8 +34,8 @@ $lang_module['error_required_title'] = 'Lỗi: Tiêu đề không được để
 // Status
 $lang_module['status_done'] = 'Hoàn thành';
 $lang_module['status_doing'] = 'Đang làm';
-$lang_module['status_class_done'] = 'label-success';
-$lang_module['status_class_doing'] = 'label-warning';
+$lang_module['status_class_done'] = 'success';
+$lang_module['status_class_doing'] = 'warning';
 
 // Priority
 $lang_module['priority_urgent'] = 'Khẩn cấp';

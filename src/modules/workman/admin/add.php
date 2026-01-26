@@ -15,6 +15,7 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 $page_title = $nv_Lang->getModule('add');
 // echo $global_config['admin_theme'];
 // Khởi tạo data
+// Khởi tạo data
 $request_data = [
     'title' => '',
     'description' => '',
@@ -22,6 +23,16 @@ $request_data = [
     'priority' => 'normal',
     'due_date' => date('d/m/Y H:i')
 ];
+
+$id = $nv_Request->get_int('id', 'get', 0);
+if ($id > 0) {
+    $page_title = $nv_Lang->getModule('edit');
+    $sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . ' WHERE id=' . $id;
+    $row = $db->query($sql)->fetch();
+    if ($row) {
+        $request_data = $row;
+    }
+}
 
 $error = '';
 
@@ -36,16 +47,26 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
     if (empty($request_data['title'])) {
         $error = $nv_Lang->getModule('error_required_title');
     } else {
-        $sql = 'INSERT INTO ' . $db_config['prefix'] . '_' . $module_data . ' (title, description, status, priority, due_date) VALUES (
-            ' . $db->quote($request_data['title']) . ',
-            ' . $db->quote($request_data['description']) . ',
-            ' . $db->quote($request_data['status']) . ',
-            ' . $db->quote($request_data['priority']) . ',
-            ' . $db->quote($request_data['due_date']) . '
-        )';
+        if ($id > 0) {
+            $sql = 'UPDATE ' . $db_config['prefix'] . '_' . $module_data . ' SET 
+                title=' . $db->quote($request_data['title']) . ', 
+                description=' . $db->quote($request_data['description']) . ', 
+                status=' . $db->quote($request_data['status']) . ', 
+                priority=' . $db->quote($request_data['priority']) . ', 
+                due_date=' . $db->quote($request_data['due_date']) . ' 
+                WHERE id=' . $id;
+        } else {
+            $sql = 'INSERT INTO ' . $db_config['prefix'] . '_' . $module_data . ' (title, description, status, priority, due_date) VALUES (
+                ' . $db->quote($request_data['title']) . ',
+                ' . $db->quote($request_data['description']) . ',
+                ' . $db->quote($request_data['status']) . ',
+                ' . $db->quote($request_data['priority']) . ',
+                ' . $db->quote($request_data['due_date']) . '
+            )';
+        }
 
         $ex = $db->exec($sql);
-        if ($ex == 1) {
+        if ($ex == 1 || ($id > 0 && $ex >= 0)) { // Update might affect 0 rows if no change
             $nv_Cache->delMod($module_name);
             nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
         } else {
@@ -61,9 +82,15 @@ $xtpl->setTemplateDir(get_module_tpl_dir('add.tpl'));
 
 // Assign dữ liệu
 $xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module); 
+$xtpl->assign('TITLE', $page_title);
 $xtpl->assign('DATA', $request_data);
 $xtpl->assign('ERROR', $error);
-$xtpl->assign('FORM_ACTION', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add');
+
+$form_action = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add';
+if ($id > 0) {
+    $form_action .= '&id=' . $id;
+}
+$xtpl->assign('FORM_ACTION', $form_action);
 
 // Danh sách trạng thái và ưu tiên dùng cho select box
 $status_list = [

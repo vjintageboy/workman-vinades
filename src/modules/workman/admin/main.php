@@ -52,7 +52,7 @@ while ($row = $result->fetch()) {
     $status_text = !empty($status_text_lang) ? $status_text_lang : $row['status'];
 
     $status_class_lang = $nv_Lang->getModule($st_class_key);
-    $status_class = !empty($status_class_lang) ? $status_class_lang : 'label-default';
+    $status_class = !empty($status_class_lang) ? $status_class_lang : 'default';
     
     // 2. Xử lý Mức độ ưu tiên (Text và Class)
     $pr_text_key = 'priority_' . $row['priority'];

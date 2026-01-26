@@ -1,6 +1,6 @@
 <!-- BEGIN: main -->
 <div class="panel panel-default">
-    <div class="panel-heading">{$LANG.add}</div>
+    <div class="panel-heading">{$TITLE}</div>
     <div class="panel-body">
         <form action="{$FORM_ACTION}" method="post">
             <div class="form-group">
