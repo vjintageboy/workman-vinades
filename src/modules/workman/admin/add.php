@@ -44,34 +44,30 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
 }
 
 // Khởi tạo Smarty
-// Lưu ý: NukeViet có autoloader cho thư viện vendor
-$smarty = new \Smarty\Smarty();
-$smarty->setTemplateDir(NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
-$smarty->setCompileDir(NV_ROOTDIR . '/data/cache/smarty-compile');
-$smarty->setCacheDir(NV_ROOTDIR . '/data/cache/smarty-cache');
-$smarty->setConfigDir(NV_ROOTDIR . '/data/cache/smarty-config');
+$xtpl = new \NukeViet\Template\NVSmarty();
+$xtpl->setTemplateDir(get_module_tpl_dir('add.tpl'));
 
 // Assign dữ liệu
-$smarty->assign('LANG', \NukeViet\Core\Language::$lang_module); 
-$smarty->assign('DATA', $request_data);
-$smarty->assign('ERROR', $error);
-$smarty->assign('FORM_ACTION', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add');
+$xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module); 
+$xtpl->assign('DATA', $request_data);
+$xtpl->assign('ERROR', $error);
+$xtpl->assign('FORM_ACTION', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add');
 
 // Danh sách trạng thái và ưu tiên dùng cho select box
 $status_list = [
     'doing' => $nv_Lang->getModule('status_doing'),
     'done' => $nv_Lang->getModule('status_done')
 ];
-$smarty->assign('STATUS_LIST', $status_list);
+$xtpl->assign('STATUS_LIST', $status_list);
 
 $priority_list = [
     'normal' => $nv_Lang->getModule('priority_normal'),
     'urgent' => $nv_Lang->getModule('priority_urgent')
 ];
-$smarty->assign('PRIORITY_LIST', $priority_list);
+$xtpl->assign('PRIORITY_LIST', $priority_list);
 
 // Render template
-$contents = $smarty->fetch('add.tpl');
+$contents = $xtpl->fetch('add.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);
