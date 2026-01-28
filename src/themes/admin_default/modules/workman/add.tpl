@@ -38,22 +38,18 @@
 
             <div class="form-group">
                 <label>{$LANG.due_date}</label>
-                <input type="text" name="due_date" value="{$DATA.due_date}" class="form-control" id="due_date_picker" autocomplete="off">
+                <input type="text" name="due_date" value="{$DATA.due_date}" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+                <span class="help-block">Định dạng: 28/01/2026 00:00</span>
             </div>
 
             <div class="form-group">
                 <label>Hình ảnh đính kèm</label>
-                {if $DATA.is_image}
-                <div style="margin-bottom: 10px;">
-                    <img src="{$smarty.const.NV_BASE_SITEURL}{$DATA.attachment}" id="image_preview" style="max-width: 300px; max-height: 200px; border: 1px solid #ddd; padding: 5px; display: block;">
-                </div>
-                {else}
-                <div style="margin-bottom: 10px; display: none;" id="image_preview_container">
-                    <img src="" id="image_preview" style="max-width: 300px; max-height: 200px; border: 1px solid #ddd; padding: 5px; display: block;">
-                </div>
-                {/if}
                 <input type="file" name="attachment_image" id="attachment_image" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp">
                 <span class="help-block">Cho phép: JPG, PNG, GIF, WEBP (Tối đa 2MB)</span>
+                
+                <div id="image_preview_container" style="margin-top: 10px; {if !$DATA.is_image}display: none;{/if}">
+                    <img src="{if $DATA.is_image}{$smarty.const.NV_BASE_SITEURL}{$DATA.attachment}{/if}" id="image_preview" style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
+                </div>
             </div>
 
             <div class="form-group">
@@ -82,26 +78,21 @@
 </div>
 
 <script>
-$(document).ready(function() {
-    // Datepicker
-    $('#due_date_picker').datepicker({
-        format: 'dd/mm/yyyy hh:ii',
-        language: '{$smarty.const.NV_LANG_DATA}',
-        autoclose: true,
-        todayHighlight: true
-    });
-    
-    // Preview image khi chọn file
-    $('#attachment_image').change(function(e) {
-        var file = e.target.files[0];
-        if (file && file.type.match('image.*')) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#image_preview').attr('src', e.target.result);
-                $('#image_preview_container').show();
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+// Preview image khi chọn file
+document.addEventListener('DOMContentLoaded', function() {
+    var imageInput = document.getElementById('attachment_image');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (file && file.type.indexOf('image') !== -1) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('image_preview').src = evt.target.result;
+                    document.getElementById('image_preview_container').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 });
 </script>
