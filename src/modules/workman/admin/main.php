@@ -104,7 +104,11 @@ $url_add = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DA
 
 $xtpl->assign('LANG', $nv_Lang->getGlobal());
 $xtpl->assign('URL_ADD', $url_add);
-$xtpl->assign('GENERATE_PAGE', $generate_page);
+
+if (!empty($generate_page)) {
+    $xtpl->assign('GENERATE_PAGE', $generate_page);
+    $xtpl->parse('main.generate_page');
+}
 
 $xtpl->parse('main');
 $contents = $xtpl->text('main');

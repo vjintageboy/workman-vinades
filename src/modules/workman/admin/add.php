@@ -13,8 +13,7 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 }
 
 $page_title = $nv_Lang->getModule('add');
-// echo $global_config['admin_theme'];
-// Khởi tạo data
+
 // Khởi tạo data
 $request_data = [
     'title' => '',
@@ -82,9 +81,14 @@ $xtpl->setTemplateDir(get_module_tpl_dir('add.tpl'));
 
 // Assign dữ liệu
 $xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module); 
+$xtpl->assign('GLANG', \NukeViet\Core\Language::$lang_global);
 $xtpl->assign('TITLE', $page_title);
 $xtpl->assign('DATA', $request_data);
 $xtpl->assign('ERROR', $error);
+
+// URL back
+$url_back = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
+$xtpl->assign('URL_BACK', $url_back);
 
 $form_action = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add';
 if ($id > 0) {

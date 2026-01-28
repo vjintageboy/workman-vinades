@@ -19,8 +19,8 @@ $lang_translator['copyright'] = '@Copyright (C) 2009-2021 VINADES.,JSC. All righ
 $lang_translator['info'] = '';
 $lang_translator['langtype'] = 'lang_module';
 
-$lang_module['main'] = 'Trang chính Workman';
-$lang_module['add'] = 'Thêm mới Workman';
+$lang_module['main'] = 'Trang chính';
+$lang_module['add'] = 'Thêm mới';
 $lang_module['edit'] = 'Sửa công việc';
 $lang_module['title'] = 'Tiêu đề';
 $lang_module['description'] = 'Mô tả';
