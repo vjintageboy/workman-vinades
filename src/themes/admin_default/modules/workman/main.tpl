@@ -9,6 +9,7 @@
                 <th>Trạng thái</th>
                 <th>Mức độ ưu tiên</th>
                 <th>Hạn chót</th>
+                <th>Đính kèm</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
@@ -29,6 +30,16 @@
                     </span>
                 </td>
                 <td class="text-center">{ROW.due_date}</td>
+                <td class="text-center">
+                    <!-- BEGIN: attachment -->
+                    <a href="{ROW.attachment_url}" target="_blank" title="{ROW.attachment_name}">
+                        <i class="fa {ROW.attachment_icon} fa-2x"></i>
+                    </a>
+                    <!-- END: attachment -->
+                    <!-- BEGIN: no_attachment -->
+                    <span class="text-muted">-</span>
+                    <!-- END: no_attachment -->
+                </td>
                 <td class="text-center">
                     <a href="{ROW.url_edit}" class="btn btn-xs btn-default" title="Sửa">
                         <i class="fa fa-edit"></i>

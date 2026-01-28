@@ -46,7 +46,7 @@ $num_items = $db->query($sql)->fetchColumn();
 // Lấy dữ liệu từ database với LIMIT và OFFSET
 try {
     $offset = ($page - 1) * $per_page;
-    $sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . ' ORDER BY id DESC LIMIT ' . $per_page . ' OFFSET ' . $offset;
+    $sql = 'SELECT id, title, description, status, priority, due_date, attachment FROM ' . $db_config['prefix'] . '_' . $module_data . ' ORDER BY id DESC LIMIT ' . $per_page . ' OFFSET ' . $offset;
     $result = $db->query($sql);
 } catch (Exception $e) {
     echo "Database error: " . $e->getMessage();
@@ -77,7 +77,41 @@ while ($row = $result->fetch()) {
     $priority_class_lang = $nv_Lang->getModule($pr_class_key);
     $priority_class = !empty($priority_class_lang) ? $priority_class_lang : 'info';
     
-    // 3. Tạo link sửa và link xóa
+    // 3. Xử lý Attachment (File đính kèm)
+    $attachment_icon = '';
+    $attachment_url = '';
+    $attachment_name = '';
+    
+    if (!empty($row['attachment'])) {
+        $attachment_name = basename($row['attachment']);
+        $attachment_url = NV_BASE_SITEURL . 'uploads/' . $module_name . '/' . $attachment_name;
+        
+        // Xác định icon dựa trên phần mở rộng của file
+        $file_ext = strtolower(pathinfo($attachment_name, PATHINFO_EXTENSION));
+        
+        $icon_map = [
+            'pdf' => 'fa-file-pdf-o',
+            'doc' => 'fa-file-word-o',
+            'docx' => 'fa-file-word-o',
+            'xls' => 'fa-file-excel-o',
+            'xlsx' => 'fa-file-excel-o',
+            'ppt' => 'fa-file-powerpoint-o',
+            'pptx' => 'fa-file-powerpoint-o',
+            'zip' => 'fa-file-archive-o',
+            'rar' => 'fa-file-archive-o',
+            '7z' => 'fa-file-archive-o',
+            'jpg' => 'fa-file-image-o',
+            'jpeg' => 'fa-file-image-o',
+            'png' => 'fa-file-image-o',
+            'gif' => 'fa-file-image-o',
+            'txt' => 'fa-file-text-o',
+            'csv' => 'fa-file-text-o'
+        ];
+        
+        $attachment_icon = isset($icon_map[$file_ext]) ? $icon_map[$file_ext] : 'fa-file-o';
+    }
+    
+    // 4. Tạo link sửa và link xóa
     $base_url = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name;
     $url_edit = $base_url . "&amp;" . NV_OP_VARIABLE . "=add&amp;id=" . $row['id'];
     $url_delete = $base_url . "&amp;" . NV_OP_VARIABLE . "=main&amp;delete_id=1&amp;id=" . $row['id'];
@@ -91,9 +125,19 @@ while ($row = $result->fetch()) {
         'priority_text' => $priority_text,
         'priority_class' => $priority_class,
         'due_date' => $row['due_date'],
+        'attachment_icon' => $attachment_icon,
+        'attachment_url' => $attachment_url,
+        'attachment_name' => $attachment_name,
         'url_edit' => $url_edit,
         'url_delete' => $url_delete,
     ]);
+
+    // Parse attachment block
+    if (!empty($row['attachment'])) {
+        $xtpl->parse('main.row.attachment');
+    } else {
+        $xtpl->parse('main.row.no_attachment');
+    }
 
     $xtpl->parse('main.row'); 
 }
