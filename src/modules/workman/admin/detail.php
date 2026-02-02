@@ -201,91 +201,39 @@ try {
 // ============================================================================
 // Render template
 // ============================================================================
-$xtpl = new XTemplate('detail.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
+$tpl = new \NukeViet\Template\NVSmarty();
+$tpl->setTemplateDir(get_module_tpl_dir('detail.tpl'));
 
-$xtpl->assign('LANG', $nv_Lang->getModule());
-$xtpl->assign('GLANG', $nv_Lang->getGlobal());
-$xtpl->assign('TASK', $task);
+$tpl->assign('LANG', $nv_Lang);
+$tpl->assign('GLANG', $nv_Lang);
+$tpl->assign('MODULE_NAME', $module_name);
+$tpl->assign('TASK', $task);
+$tpl->assign('TASK_ID', $id);
 
 // URLs
 $url_back = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 $url_edit = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add&id=' . $id;
 $form_action = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail&id=' . $id;
+$url_comment = $form_action;
 
-$xtpl->assign('URL_BACK', $url_back);
-$xtpl->assign('URL_EDIT', $url_edit);
-$xtpl->assign('FORM_ACTION', $form_action);
-$xtpl->assign('TASK_ID', $id);
-
-// Overdue
-if ($task['is_overdue']) {
-    $xtpl->parse('main.is_overdue');
-} else {
-    $xtpl->parse('main.not_overdue');
-}
-
-// Completed at
-if ($task['completed_at'] > 0) {
-    $xtpl->parse('main.completed_at');
-}
+$tpl->assign('URL_BACK', $url_back);
+$tpl->assign('URL_EDIT', $url_edit);
+$tpl->assign('FORM_ACTION', $form_action);
+$tpl->assign('URL_COMMENT', $url_comment);
 
 // Comments
-foreach ($comments as $comment) {
-    $xtpl->assign('COMMENT', $comment);
-    if (!empty($comment['attachment'])) {
-        $xtpl->parse('main.comment.attachment');
-    }
-    // Highlight admin comments
-    if ($comment['is_admin']) {
-        $xtpl->parse('main.comment.is_admin_badge');
-    }
-    $xtpl->parse('main.comment');
-}
-
-if (empty($comments)) {
-    $xtpl->parse('main.no_comments');
-}
-
-// Comment form for admin
-$url_comment = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail&id=' . $id;
-$xtpl->assign('URL_COMMENT', $url_comment);
-$xtpl->parse('main.comment_form');
+$tpl->assign('COMMENTS', $comments);
 
 // Activity logs
-foreach ($logs as $log) {
-    $xtpl->assign('LOG', $log);
-    if (!empty($log['old_value']) || !empty($log['new_value'])) {
-        if (!empty($log['old_value'])) {
-            $xtpl->parse('main.log.change_detail.old_value');
-        }
-        $xtpl->parse('main.log.change_detail');
-    }
-    $xtpl->parse('main.log');
-}
-
-// Attachment
-if (!empty($task['attachment'])) {
-    if ($task['is_image']) {
-        $xtpl->parse('main.attachment_image');
-    } else {
-        $xtpl->parse('main.attachment_file');
-    }
-}
+$tpl->assign('LOGS', $logs);
 
 // Status list for quick change
 $status_list = workman_get_status_list();
-foreach ($status_list as $key => $label) {
-    $xtpl->assign('STATUS_OPTION', [
-        'key' => $key,
-        'label' => $label,
-        'selected' => ($task['status'] == $key) ? 'selected' : ''
-    ]);
-    $xtpl->parse('main.status_option');
-}
+$tpl->assign('STATUS_LIST', $status_list);
 
-$xtpl->parse('main');
-$contents = $xtpl->text('main');
+$contents = $tpl->fetch('detail.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);
 include NV_ROOTDIR . '/includes/footer.php';
+

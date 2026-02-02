@@ -119,13 +119,15 @@ try {
 // ============================================================================
 // Render template
 // ============================================================================
-$xtpl = new XTemplate('reports.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
+$tpl = new \NukeViet\Template\NVSmarty();
+$tpl->setTemplateDir(get_module_tpl_dir('reports.tpl'));
 
-$xtpl->assign('LANG', $nv_Lang->getModule());
-$xtpl->assign('GLANG', $nv_Lang->getGlobal());
+$tpl->assign('LANG', $nv_Lang);
+$tpl->assign('GLANG', $nv_Lang);
+$tpl->assign('MODULE_NAME', $module_name);
 
 // Stats cards
-$xtpl->assign('STATS', $stats);
+$tpl->assign('STATS', $stats);
 
 // Chart data for JS (JSON)
 $chart_data = [
@@ -135,57 +137,31 @@ $chart_data = [
     'data' => [$stats['draft'], $stats['pending'], $stats['doing'], $stats['review'], $stats['done'], $stats['cancelled']],
     'colors' => ['#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#dc3545']
 ];
-$xtpl->assign('CHART_DATA', json_encode($chart_data));
+$tpl->assign('CHART_DATA', json_encode($chart_data));
 
 // Stats by user
-if (empty($stats_by_user)) {
-    $xtpl->parse('main.no_user_stat');
-} else {
-    foreach ($stats_by_user as $user_stat) {
-        $xtpl->assign('USER_STAT', $user_stat);
-        $xtpl->parse('main.user_stat_row');
-    }
-}
+$tpl->assign('STATS_BY_USER', $stats_by_user);
 
 // Stats by category
-if (empty($stats_by_category)) {
-    $xtpl->parse('main.no_cat_stat');
-} else {
-    foreach ($stats_by_category as $cat_stat) {
-        $xtpl->assign('CAT_STAT', $cat_stat);
-        $xtpl->parse('main.cat_stat_row');
-    }
-}
+$tpl->assign('STATS_BY_CATEGORY', $stats_by_category);
 
-// Overdue tasks
-if (empty($overdue_tasks)) {
-    $xtpl->parse('main.no_overdue');
-} else {
-    foreach ($overdue_tasks as $task) {
-        $url_edit = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=add&amp;id=' . $task['id'];
-        $task['url_edit'] = $url_edit;
-        $xtpl->assign('OVERDUE', $task);
-        $xtpl->parse('main.overdue_row');
-    }
+// Overdue tasks - add edit URLs
+foreach ($overdue_tasks as &$task) {
+    $task['url_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=add&amp;id=' . $task['id'];
 }
+unset($task);
+$tpl->assign('OVERDUE_TASKS', $overdue_tasks);
 
 // Recent activities
-if (empty($recent_activities)) {
-    $xtpl->parse('main.no_activity');
-} else {
-    foreach ($recent_activities as $activity) {
-        $xtpl->assign('ACTIVITY', $activity);
-        $xtpl->parse('main.activity_row');
-    }
-}
+$tpl->assign('RECENT_ACTIVITIES', $recent_activities);
 
 // URLs
 $url_back = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
-$xtpl->assign('URL_BACK', $url_back);
+$tpl->assign('URL_BACK', $url_back);
 
-$xtpl->parse('main');
-$contents = $xtpl->text('main');
+$contents = $tpl->fetch('reports.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);
 include NV_ROOTDIR . '/includes/footer.php';
+

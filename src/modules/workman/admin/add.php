@@ -283,11 +283,13 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
 // ============================================================================
 // Render template
 // ============================================================================
+
 try {
     $xtpl = new \NukeViet\Template\NVSmarty();
     // Explicitly use admin theme directory for admin module templates
-    $tpl_dir = NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name;
+    $tpl_dir = NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_name;
     $xtpl->setTemplateDir($tpl_dir);
+    echo $global_config['module_theme'];
 
     // Assign dữ liệu
     $xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module); 

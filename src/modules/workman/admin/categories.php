@@ -146,69 +146,36 @@ while ($row = $result->fetch()) {
 // ============================================================================
 // Render template
 // ============================================================================
-$xtpl = new XTemplate('categories.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
+$tpl = new \NukeViet\Template\NVSmarty();
+$tpl->setTemplateDir(get_module_tpl_dir('categories.tpl'));
 
-$xtpl->assign('LANG', $nv_Lang->getModule());
-$xtpl->assign('GLANG', $nv_Lang->getGlobal());
-$xtpl->assign('ERROR', $error);
-$xtpl->assign('SUCCESS', $success);
-$xtpl->assign('FORM_DATA', $form_data);
+$tpl->assign('LANG', $nv_Lang);
+$tpl->assign('GLANG', $nv_Lang);
+$tpl->assign('MODULE_NAME', $module_name);
+$tpl->assign('ERROR', $error);
+$tpl->assign('SUCCESS', $success);
+$tpl->assign('FORM_DATA', $form_data);
 
 // URLs
 $url_back = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 $form_action = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=categories';
 
-$xtpl->assign('URL_BACK', $url_back);
-$xtpl->assign('FORM_ACTION', $form_action);
+$tpl->assign('URL_BACK', $url_back);
+$tpl->assign('FORM_ACTION', $form_action);
 
-// Parse form mode (add or edit)
-if ($form_data['id'] > 0) {
-    $xtpl->parse('main.form_edit');
-    $xtpl->parse('main.btn_cancel');
-} else {
-    $xtpl->parse('main.form_add');
+// Prepare categories with URLs
+foreach ($categories as &$cat) {
+    $cat['url_edit'] = $form_action . '&edit_id=' . $cat['id'];
+    $cat['url_delete'] = $form_action . '&delete_id=' . $cat['id'];
+    $cat['status_text'] = $cat['status'] ? $nv_Lang->getGlobal('yes') : $nv_Lang->getGlobal('no');
+    $cat['status_class'] = $cat['status'] ? 'success' : 'secondary';
 }
+unset($cat);
+$tpl->assign('CATEGORIES', $categories);
 
-// Parse status select
-if ($form_data['status'] == 1) {
-    $xtpl->parse('main.status_active');
-} else {
-    $xtpl->parse('main.status_inactive');
-}
-
-// Render danh sách categories
-if (empty($categories)) {
-    $xtpl->parse('main.no_data');
-} else {
-    foreach ($categories as $cat) {
-        $url_edit = $form_action . '&edit_id=' . $cat['id'];
-        $url_delete = $form_action . '&delete_id=' . $cat['id'];
-        
-        $xtpl->assign('CAT', [
-            'id' => $cat['id'],
-            'title' => $cat['title'],
-            'description' => $cat['description'],
-            'color' => $cat['color'],
-            'weight' => $cat['weight'],
-            'status' => $cat['status'],
-            'status_text' => $cat['status'] ? $nv_Lang->getGlobal('yes') : $nv_Lang->getGlobal('no'),
-            'status_class' => $cat['status'] ? 'success' : 'default',
-            'task_count' => $cat['task_count'],
-            'url_edit' => $url_edit,
-            'url_delete' => $url_delete
-        ]);
-        
-        $xtpl->parse('main.category_row');
-    }
-}
-
-if (!empty($error)) {
-    $xtpl->parse('main.error');
-}
-
-$xtpl->parse('main');
-$contents = $xtpl->text('main');
+$contents = $tpl->fetch('categories.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);
 include NV_ROOTDIR . '/includes/footer.php';
+

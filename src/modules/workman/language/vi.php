@@ -197,3 +197,29 @@ $lang_module['col_actions'] = 'Thao tác';
 $lang_module['no_tasks'] = 'Chưa có công việc nào';
 $lang_module['no_tasks_assigned'] = 'Bạn chưa được giao công việc nào';
 $lang_module['no_results'] = 'Không có kết quả phù hợp';
+
+// ============================================================================
+// Additional Keys for Admin Templates
+// ============================================================================
+$lang_module['total'] = 'Tổng';
+$lang_module['stats_by_user'] = 'Theo người thực hiện';
+$lang_module['stats_by_category'] = 'Theo danh mục';
+$lang_module['assignee'] = 'Người thực hiện';
+$lang_module['no_data'] = 'Chưa có dữ liệu';
+$lang_module['overdue'] = 'Quá hạn';
+$lang_module['no_overdue_tasks'] = 'Không có công việc quá hạn';
+$lang_module['days'] = 'ngày';
+$lang_module['no_activity'] = 'Chưa có hoạt động nào';
+$lang_module['no_description'] = 'Không có mô tả';
+$lang_module['attachment_optional'] = 'Đính kèm file (tùy chọn)';
+$lang_module['quick_status_change'] = 'Thay đổi nhanh trạng thái';
+$lang_module['category_name'] = 'Tên danh mục';
+$lang_module['display_color'] = 'Màu hiển thị';
+$lang_module['weight_short'] = 'STT';
+$lang_module['task_count'] = 'Số công việc';
+$lang_module['actions'] = 'Thao tác';
+$lang_module['no_category_yet'] = 'Chưa có danh mục nào. Hãy thêm danh mục mới.';
+$lang_module['confirm_delete_category'] = 'Bạn có chắc muốn xóa danh mục này?';
+$lang_module['active'] = 'Hoạt động';
+$lang_module['inactive'] = 'Tạm ẩn';
+
