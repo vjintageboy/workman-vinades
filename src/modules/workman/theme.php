@@ -1,14 +1,23 @@
 <?php
 
 /**
- * NukeViet Content Management System
+ * NukeViet Content Management System - Workman Module
+ * Theme configuration file
  * @version 5.x
- * @author VINADES.,JSC <contact@vinades.vn>
- * @copyright (C) 2009-2025 VINADES.,JSC. All rights reserved
- * @license GNU/GPL version 2 or any later version
- * @see https://github.com/nukeviet The NukeViet CMS GitHub project
  */
 
-if (!defined('NV_IS_WORKMAN_ADMIN')) {
+if (!defined('NV_SYSTEM')) {
     exit('Stop!!!');
 }
+
+// Define module constant
+define('NV_IS_MOD_WORKMAN', true);
+
+// Các function cho phép ở frontend
+$funcs = [
+    'main',      // Dashboard
+    'list',      // Danh sách công việc
+    'detail',    // Chi tiết công việc
+    'update',    // Cập nhật status (AJAX)
+    'comment'    // Thêm comment
+];

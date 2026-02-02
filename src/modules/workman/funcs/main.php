@@ -1,83 +1,178 @@
 <?php
 
 /**
- * NukeViet Content Management System
+ * NukeViet Content Management System - Workman Module
+ * User Dashboard (Frontend)
  * @version 5.x
- * @author VINADES.,JSC <contact@vinades.vn>
- * @copyright (C) 2009-2025 VINADES.,JSC. All rights reserved
- * @license GNU/GPL version 2 or any later version
- * @see https://github.com/nukeviet The NukeViet CMS GitHub project
  */
-if (!defined('NV_IS_WORKMAN_ADMIN')) {
+
+if (!defined('NV_IS_MOD_WORKMAN')) {
     exit('Stop!!!');
 }
 
-$page_title = $lang_module['main'];
-
-// Thiết lập đường dẫn Template
-$xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['admin_theme'] . '/modules/' . $module_name);
-
-// Dữ liệu mẫu (Sau này thay bằng query database)
-$rows = [
-    [
-        'id' => 1,
-        'title' => 'Thiết kế database',
-        'description' => 'Thiết kế bảng công việc',
-        'status' => 'done',
-        'priority' => 'urgent', // Đã đổi để test màu
-        'due_date' => time() - 3600
-    ],
-    [
-        'id' => 2,
-        'title' => 'Viết giao diện admin',
-        'description' => 'XTemplate cho admin',
-        'status' => 'doing',
-        'priority' => 'normal',
-        'due_date' => time() + 7200
-    ]
-];
-
-foreach ($rows as $row) {
-
-    // 1. Xử lý Trạng thái (Text và Class)
-    $st_text_key = 'status_' . $row['status'];
-    $st_class_key = 'status_class_' . $row['status'];
-    
-    $status_text = (isset($lang_module[$st_text_key])) ? $lang_module[$st_text_key] : $row['status'];
-    $status_class = (isset($lang_module[$st_class_key])) ? $lang_module[$st_class_key] : 'label-default';
-    
-    // 2. Xử lý Mức độ ưu tiên (Text và Class)
-    $pr_text_key = 'priority_' . $row['priority'];
-    $pr_class_key = 'priority_class_' . $row['priority'];
-
-    $priority_text = (isset($lang_module[$pr_text_key])) ? $lang_module[$pr_text_key] : $row['priority'];
-    $priority_class = (isset($lang_module[$pr_class_key])) ? $lang_module[$pr_class_key] : 'info';
-    
-    // 3. Tạo link sửa
-    $url_edit = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name . "&amp;" . NV_OP_VARIABLE . "=edit&amp;id=" . $row['id'];
-    
-    $xtpl->assign('ROW', [
-        'id' => $row['id'],
-        'title' => $row['title'],
-        'description' => nv_clean60($row['description'], 100),
-        'status_text' => $status_text,
-        'status_class' => $status_class,
-        'priority_text' => $priority_text,
-        'priority_class' => $priority_class,
-        'due_date' => nv_date('d/m/Y H:i', $row['due_date']),
-        'url_edit' => $url_edit,
-    ]);
-
-    $xtpl->parse('main.row'); 
+// Kiểm tra user đã đăng nhập
+if (!defined('NV_IS_USER')) {
+    nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=users&' . NV_OP_VARIABLE . '=login&nv_redirect=' . nv_redirect_encrypt(NV_MY_DOMAIN . NV_REQUEST_URI));
 }
 
-// Đường dẫn link xóa
-$url_delete = NV_BASE_ADMINURL . "index.php?" . NV_LANG_VARIABLE . "=" . NV_LANG_DATA . "&amp;" . NV_NAME_VARIABLE . "=" . $module_name . "&amp;" . NV_OP_VARIABLE . "=delete";
-$xtpl->assign('URL_DELETE', $url_delete);
+$page_title = $nv_Lang->getModule('dashboard');
+
+// Load helper functions
+require_once NV_ROOTDIR . '/modules/' . $module_file . '/functions.php';
+
+// Lấy stats của user hiện tại
+$user_id = $user_info['userid'];
+$stats = workman_count_tasks_by_status($user_id);
+
+// ============================================================================
+// Lấy công việc mới (pending) - cần nhận
+// ============================================================================
+$pending_tasks = [];
+$sql = 'SELECT w.*, c.title as category_title, c.color as category_color
+        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
+        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
+        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "pending"
+        ORDER BY w.due_date ASC, w.id DESC
+        LIMIT 5';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
+        $pending_tasks[] = $row;
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+// ============================================================================
+// Lấy công việc đang làm
+// ============================================================================
+$doing_tasks = [];
+$sql = 'SELECT w.*, c.title as category_title, c.color as category_color
+        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
+        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
+        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "doing"
+        ORDER BY w.due_date ASC, w.id DESC
+        LIMIT 5';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
+        $row['is_overdue'] = ($row['due_date'] > 0 && $row['due_date'] < NV_CURRENTTIME);
+        $doing_tasks[] = $row;
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+// ============================================================================
+// Lấy công việc chờ duyệt
+// ============================================================================
+$review_tasks = [];
+$sql = 'SELECT w.*, c.title as category_title, c.color as category_color
+        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
+        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
+        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "review"
+        ORDER BY w.id DESC
+        LIMIT 5';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
+        $review_tasks[] = $row;
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+// ============================================================================
+// Lấy thông báo chưa đọc
+// ============================================================================
+$notifications = [];
+$sql = 'SELECT n.*, w.title as work_title
+        FROM ' . $db_config['prefix'] . '_' . $module_data . '_notifications n
+        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . ' w ON n.work_id = w.id
+        WHERE n.user_id = ' . $user_id . ' AND n.is_read = 0
+        ORDER BY n.created_at DESC
+        LIMIT 5';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        $row['created_at_formatted'] = nv_date('d/m/Y H:i', $row['created_at']);
+        $notifications[] = $row;
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+$unread_count = count($notifications);
+
+// ============================================================================
+// Render template
+// ============================================================================
+$xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
+
+$xtpl->assign('LANG', $nv_Lang->getModule());
+$xtpl->assign('GLANG', $nv_Lang->getGlobal());
+$xtpl->assign('STATS', $stats);
+$xtpl->assign('USER_NAME', $user_info['username']);
+$xtpl->assign('UNREAD_COUNT', $unread_count);
+
+// URLs
+$url_list = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=list';
+$url_detail_base = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail&id=';
+
+$xtpl->assign('URL_LIST', $url_list);
+
+// Pending tasks
+foreach ($pending_tasks as $task) {
+    $task['url_detail'] = $url_detail_base . $task['id'];
+    $xtpl->assign('PENDING', $task);
+    $xtpl->parse('main.pending_task');
+}
+
+if (empty($pending_tasks)) {
+    $xtpl->parse('main.no_pending');
+}
+
+// Doing tasks
+foreach ($doing_tasks as $task) {
+    $task['url_detail'] = $url_detail_base . $task['id'];
+    $xtpl->assign('DOING', $task);
+    if ($task['is_overdue']) {
+        $xtpl->parse('main.doing_task.overdue');
+    }
+    $xtpl->parse('main.doing_task');
+}
+
+if (empty($doing_tasks)) {
+    $xtpl->parse('main.no_doing');
+}
+
+// Review tasks
+foreach ($review_tasks as $task) {
+    $task['url_detail'] = $url_detail_base . $task['id'];
+    $xtpl->assign('REVIEW', $task);
+    $xtpl->parse('main.review_task');
+}
+
+if (empty($review_tasks)) {
+    $xtpl->parse('main.no_review');
+}
+
+// Notifications
+foreach ($notifications as $notif) {
+    $notif['url_detail'] = $url_detail_base . $notif['work_id'];
+    $xtpl->assign('NOTIF', $notif);
+    $xtpl->parse('main.notification');
+}
+
+if (empty($notifications)) {
+    $xtpl->parse('main.no_notifications');
+}
 
 $xtpl->parse('main');
 $contents = $xtpl->text('main');
-
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_site_theme($contents);
