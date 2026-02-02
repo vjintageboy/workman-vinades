@@ -16,11 +16,30 @@ if (!defined('NV_SYSTEM')) {
 define('NV_IS_WORKMAN_ADMIN', true);
 
 // Load CSS for workman module (frontend)
-global $my_head, $global_config, $module_info;
+global $my_head, $global_config, $module_info, $op_file;
 $css_file = NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/css/workman.css';
 if (file_exists($css_file)) {
     $my_head .= '<link rel="stylesheet" href="' . NV_STATIC_URL . 'themes/' . $global_config['module_theme'] . '/css/workman.css?t=' . $global_config['timestamp'] . '">' . "\n";
 }
+
+// Override layout để sử dụng layout 'main' (Full-width, có header/footer/blocks)
+// Chỉ áp dụng cho frontend
+if (!defined('NV_ADMIN')) {
+    global $op;
+    // Gán layout 'main' cho tất cả các function của module này
+    foreach ($module_info['funcs'] as $func_name => $func_values) {
+        $module_info['layout_funcs'][$func_name] = 'main';
+    }
+    
+    // Đảm bảo op hiện tại cũng dùng layout main
+    if (!empty($op)) {
+        $module_info['layout_funcs'][$op] = 'main';
+    }
+}
+
+
+
+
 
 /**
  * Lấy danh sách categories đang active

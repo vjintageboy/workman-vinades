@@ -170,6 +170,11 @@ foreach ($logs as $log) {
     $xtpl->parse('main.log');
 }
 
+if (empty($logs)) {
+    $xtpl->parse('main.no_logs');
+}
+
+
 // Attachment
 if (!empty($task['attachment'])) {
     if ($task['is_image']) {

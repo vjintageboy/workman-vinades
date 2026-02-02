@@ -21,3 +21,11 @@ $funcs = [
     'update',    // Cập nhật status (AJAX)
     'comment'    // Thêm comment
 ];
+
+// Sử dụng layout riêng cho module (không có sidebar, blocks)
+// Layout này sẽ được đọc từ themes/{theme}/layout/layout.workman.tpl
+$layout_funcs = [
+    'main' => 'workman',
+    'list' => 'workman',
+    'detail' => 'workman',
+];

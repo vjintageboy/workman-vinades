@@ -42,7 +42,7 @@ $request_data = [
     'description' => '',
     'status' => 'draft',
     'priority' => 'normal',
-    'due_date' => date('d/m/Y H:i', NV_CURRENTTIME + 7 * 86400), // Default: 7 ngày sau
+    'due_date' => date('Y-m-d\TH:i', NV_CURRENTTIME + 7 * 86400), // Default: 7 ngày sau (HTML5 datetime-local format)
     'attachment' => '',
     'category_id' => 0,
     'assigned_to' => 0,
@@ -63,9 +63,14 @@ if ($id > 0) {
         $row = $db->query($sql)->fetch();
         if ($row) {
             $request_data = $row;
-            // Format due_date for display
-            if ($request_data['due_date'] > 0) {
-                $request_data['due_date'] = nv_date('d/m/Y H:i', $request_data['due_date']);
+            // Convert due_date from DB format (d/m/Y H:i) to HTML5 datetime-local format (Y-m-d\TH:i)
+            if (!empty($request_data['due_date'])) {
+                $dt = DateTime::createFromFormat('d/m/Y H:i', $request_data['due_date']);
+                if ($dt !== false) {
+                    $request_data['due_date'] = $dt->format('Y-m-d\TH:i');
+                } else {
+                    $request_data['due_date'] = '';
+                }
             } else {
                 $request_data['due_date'] = '';
             }
@@ -90,17 +95,14 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
     $request_data['priority'] = $nv_Request->get_string('priority', 'post', 'normal');
     $request_data['category_id'] = $nv_Request->get_int('category_id', 'post', 0);
     $request_data['assigned_to'] = $nv_Request->get_int('assigned_to', 'post', 0);
-    $due_date_string = $nv_Request->get_string('due_date', 'post', '');
+    $due_date_html5 = $nv_Request->get_string('due_date', 'post', '');
     
-    // Parse due_date từ format d/m/Y H:i thành timestamp
-    $due_date_timestamp = 0;
-    if (!empty($due_date_string)) {
-        $date_parts = date_parse_from_format('d/m/Y H:i', $due_date_string);
-        if ($date_parts['error_count'] == 0) {
-            $due_date_timestamp = mktime(
-                $date_parts['hour'], $date_parts['minute'], 0,
-                $date_parts['month'], $date_parts['day'], $date_parts['year']
-            );
+    // Convert due_date từ HTML5 datetime-local format (Y-m-d\TH:i) sang DB format (d/m/Y H:i)
+    $due_date_db = '';
+    if (!empty($due_date_html5)) {
+        $dt = DateTime::createFromFormat('Y-m-d\TH:i', $due_date_html5);
+        if ($dt !== false) {
+            $due_date_db = $dt->format('d/m/Y H:i');
         }
     }
     
@@ -207,7 +209,7 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
                         description = ' . $db->quote($request_data['description']) . ', 
                         status = ' . $db->quote($request_data['status']) . ', 
                         priority = ' . $db->quote($request_data['priority']) . ', 
-                        due_date = ' . intval($due_date_timestamp) . ',
+                        due_date = ' . $db->quote($due_date_db) . ',
                         attachment = ' . $db->quote($request_data['attachment']) . ',
                         category_id = ' . intval($request_data['category_id']) . ',
                         assigned_to = ' . intval($request_data['assigned_to']) . ',
@@ -244,7 +246,7 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
                         ' . $db->quote($request_data['description']) . ',
                         ' . $db->quote($request_data['status']) . ',
                         ' . $db->quote($request_data['priority']) . ',
-                        ' . intval($due_date_timestamp) . ',
+                        ' . $db->quote($due_date_db) . ',
                         ' . $db->quote($request_data['attachment']) . ',
                         ' . intval($request_data['category_id']) . ',
                         ' . intval($request_data['assigned_to']) . ',
@@ -276,8 +278,8 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
         }
     }
     
-    // Restore due_date display format khi có lỗi
-    $request_data['due_date'] = $due_date_string;
+    // Restore due_date display format khi có lỗi (keep HTML5 format for the form)
+    $request_data['due_date'] = $due_date_html5;
 }
 
 // ============================================================================
@@ -286,13 +288,12 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
 
 try {
     $xtpl = new \NukeViet\Template\NVSmarty();
-    // Explicitly use admin theme directory for admin module templates
+    // Use admin_theme for admin module templates (templates are in admin_future/modules/workman/)
     $tpl_dir = NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_name;
     $xtpl->setTemplateDir($tpl_dir);
-    echo $global_config['module_theme'];
 
-    // Assign dữ liệu
-    $xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module); 
+    // Assign dữ liệu - use $nv_Lang object for method calls in template
+    $xtpl->assign('LANG', $nv_Lang); 
     $xtpl->assign('GLANG', \NukeViet\Core\Language::$lang_global);
     $xtpl->assign('TITLE', $page_title);
     
@@ -305,7 +306,7 @@ try {
         $request_data['is_image'] = false;
     }
     
-    $xtpl->assign('DATA', $request_data);
+    $xtpl->assign('WORKMAN_ROW', $request_data);
     $xtpl->assign('ERROR', $error);
     $xtpl->assign('SUCCESS', $success);
     $xtpl->assign('IS_EDIT', $is_edit);

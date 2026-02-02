@@ -20,13 +20,13 @@
                     <!-- Title -->
                     <div class="mb-3">
                         <label class="form-label">{$LANG->getModule('title')} <span class="text-danger">*</span></label>
-                        <input type="text" name="title" value="{$DATA.title}" class="form-control" required>
+                        <input type="text" name="title" value="{$WORKMAN_ROW.title}" class="form-control" required>
                     </div>
                     
                     <!-- Description -->
                     <div class="mb-3">
                         <label class="form-label">{$LANG->getModule('description')}</label>
-                        <textarea name="description" class="form-control" rows="8">{$DATA.description}</textarea>
+                        <textarea name="description" class="form-control" rows="8">{$WORKMAN_ROW.description}</textarea>
                     </div>
                     
                     <!-- Attachments -->
@@ -41,16 +41,16 @@
                                     <input type="file" name="attachment_image" id="attachment_image" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp">
                                     <div class="form-text">JPG, PNG, GIF, WEBP (Max 2MB)</div>
                                     
-                                    <div id="image_preview_container" class="mt-2" style="{if !$DATA.is_image}display: none;{/if}">
-                                        <img src="{if $DATA.is_image}{$smarty.const.NV_BASE_SITEURL}{$DATA.attachment}{/if}" id="image_preview" class="img-fluid rounded border" style="max-height: 200px;">
+                                    <div id="image_preview_container" class="mt-2" style="{if !$WORKMAN_ROW.is_image}display: none;{/if}">
+                                        <img src="{if $WORKMAN_ROW.is_image}{$smarty.const.NV_BASE_SITEURL}{$WORKMAN_ROW.attachment}{/if}" id="image_preview" class="img-fluid rounded border" style="max-height: 200px;">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label"><i class="fa-solid fa-file"></i> {$LANG->getModule('attachment')}</label>
-                                    {if !empty($DATA.attachment) && !$DATA.is_image}
+                                    {if !empty($WORKMAN_ROW.attachment) && !$WORKMAN_ROW.is_image}
                                     <div class="alert alert-info py-2 mb-2">
                                         <i class="fa-solid fa-file"></i> 
-                                        <a href="{$smarty.const.NV_BASE_SITEURL}{$DATA.attachment}" target="_blank">{$DATA.attachment_name}</a>
+                                        <a href="{$smarty.const.NV_BASE_SITEURL}{$WORKMAN_ROW.attachment}" target="_blank">{$WORKMAN_ROW.attachment_name}</a>
                                     </div>
                                     {/if}
                                     <input type="file" name="attachment" class="form-control">
@@ -69,7 +69,7 @@
                         <select name="category_id" class="form-select">
                             <option value="0">{$LANG->getModule('select_category')}</option>
                             {foreach from=$CATEGORIES key=cat_id item=cat}
-                            <option value="{$cat.id}" {if $DATA.category_id == $cat.id}selected{/if} style="border-left: 4px solid {$cat.color};">
+                            <option value="{$cat.id}" {if $WORKMAN_ROW.category_id == $cat.id}selected{/if} style="border-left: 4px solid {$cat.color};">
                                 {$cat.title}
                             </option>
                             {/foreach}
@@ -82,7 +82,7 @@
                         <select name="assigned_to" class="form-select">
                             <option value="0">{$LANG->getModule('select_user')}</option>
                             {foreach from=$USERS key=uid item=user}
-                            <option value="{$user.userid}" {if $DATA.assigned_to == $user.userid}selected{/if}>
+                            <option value="{$user.userid}" {if $WORKMAN_ROW.assigned_to == $user.userid}selected{/if}>
                                 {$user.fullname} ({$user.username})
                             </option>
                             {/foreach}
@@ -94,7 +94,7 @@
                         <label class="form-label">{$LANG->getModule('status')}</label>
                         <select name="status" class="form-select">
                             {foreach from=$STATUS_LIST key=key item=item}
-                            <option value="{$key}" {if $DATA.status == $key}selected{/if}>{$item}</option>
+                            <option value="{$key}" {if $WORKMAN_ROW.status == $key}selected{/if}>{$item}</option>
                             {/foreach}
                         </select>
                     </div>
@@ -104,15 +104,16 @@
                         <label class="form-label">{$LANG->getModule('priority')}</label>
                         <select name="priority" class="form-select">
                             {foreach from=$PRIORITY_LIST key=key item=item}
-                            <option value="{$key}" {if $DATA.priority == $key}selected{/if}>{$item}</option>
+                            <option value="{$key}" {if $WORKMAN_ROW.priority == $key}selected{/if}>{$item}</option>
                             {/foreach}
                         </select>
                     </div>
 
-                    <!-- Due Date -->
+                    <!-- Due Date - HTML5 datetime-local picker -->
                     <div class="mb-3">
                         <label class="form-label">{$LANG->getModule('due_date')}</label>
-                        <input type="text" name="due_date" value="{$DATA.due_date}" class="form-control" placeholder="dd/mm/yyyy HH:ii" autocomplete="off">
+                        <input type="datetime-local" name="due_date" value="{$WORKMAN_ROW.due_date}" class="form-control">
+                        <div class="form-text">Chọn ngày và giờ hết hạn</div>
                     </div>
                 </div>
             </div>
