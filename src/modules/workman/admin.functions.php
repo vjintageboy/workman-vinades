@@ -16,11 +16,16 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 $allow_func = [
     'main',
     'add',
+    'detail',
     'categories',
     'reports'
 ];
 
 define('NV_IS_FILE_ADMIN', true);
+
+// Load CSS for workman module
+global $my_head, $global_config, $module_info;
+$my_head .= '<link rel="stylesheet" href="' . NV_STATIC_URL . 'themes/' . $global_config['admin_theme'] . '/css/workman.css?t=' . $global_config['timestamp'] . '">' . "\n";
 
 // ============================================================================
 // HELPER FUNCTIONS FOR WORKMAN MODULE

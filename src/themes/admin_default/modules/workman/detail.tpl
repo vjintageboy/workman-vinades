@@ -134,17 +134,17 @@
                         <strong><i class="fa fa-reply"></i> Thêm bình luận</strong>
                     </div>
                     <div class="panel-body">
-                        <form method="post" action="{URL_COMMENT}" enctype="multipart/form-data" class="comment-form">
+                        <form method="post" action="{URL_COMMENT}" enctype="multipart/form-data">
                             <input type="hidden" name="work_id" value="{TASK_ID}">
-                            <div class="form-group">
-                                <textarea name="content" class="form-control" rows="4" placeholder="Nhập nội dung bình luận..." required></textarea>
+                            <div class="margin-bottom">
+                                <textarea name="content" class="form-control" rows="4" placeholder="Nhập nội dung bình luận..." required style="width: 100%;"></textarea>
                             </div>
-                            <div class="form-group">
+                            <div class="margin-bottom">
                                 <label><i class="fa fa-paperclip"></i> Đính kèm file (tùy chọn):</label>
-                                <input type="file" name="attachment" class="form-control">
+                                <input type="file" name="attachment" class="form-control" style="width: 100%;">
                             </div>
-                            <div class="form-group">
-                                <button type="submit" name="submit_comment" class="btn btn-primary btn-lg btn-block">
+                            <div>
+                                <button type="submit" name="submit_comment" class="btn btn-primary btn-lg" style="width: 100%;">
                                     <i class="fa fa-send"></i> Gửi bình luận
                                 </button>
                             </div>

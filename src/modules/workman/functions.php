@@ -15,6 +15,13 @@ if (!defined('NV_SYSTEM')) {
 
 define('NV_IS_WORKMAN_ADMIN', true);
 
+// Load CSS for workman module (frontend)
+global $my_head, $global_config, $module_info;
+$css_file = NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/css/workman.css';
+if (file_exists($css_file)) {
+    $my_head .= '<link rel="stylesheet" href="' . NV_STATIC_URL . 'themes/' . $global_config['module_theme'] . '/css/workman.css?t=' . $global_config['timestamp'] . '">' . "\n";
+}
+
 /**
  * Lấy danh sách categories đang active
  * 

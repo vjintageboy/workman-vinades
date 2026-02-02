@@ -196,6 +196,9 @@
                         <!-- END: attachment -->
                     </td>
                     <td class="text-center">
+                        <a href="{ROW.url_detail}" class="btn btn-xs btn-info" title="Xem chi tiết">
+                            <i class="fa fa-eye"></i>
+                        </a>
                         <a href="{ROW.url_edit}" class="btn btn-xs btn-default" title="Sửa">
                             <i class="fa fa-edit"></i>
                         </a>

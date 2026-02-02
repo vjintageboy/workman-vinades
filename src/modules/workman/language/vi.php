@@ -30,6 +30,8 @@ $lang_module['reports'] = 'Thống kê & Báo cáo';
 $lang_module['settings'] = 'Cài đặt';
 $lang_module['my_tasks'] = 'Công việc của tôi';
 $lang_module['task_detail'] = 'Chi tiết công việc';
+$lang_module['task_info'] = 'Thông tin công việc';
+$lang_module['activity_log'] = 'Lịch sử hoạt động';
 
 // ============================================================================
 // Form Labels
@@ -73,6 +75,8 @@ $lang_module['accept_task'] = 'Nhận việc';
 $lang_module['request_review'] = 'Yêu cầu duyệt';
 $lang_module['approve'] = 'Duyệt';
 $lang_module['reject'] = 'Từ chối';
+$lang_module['confirm_update_status'] = 'Bạn có chắc chắn muốn cập nhật trạng thái?';
+$lang_module['update_success'] = 'Cập nhật thành công!';
 
 // ============================================================================
 // Status
@@ -123,6 +127,7 @@ $lang_module['activity_history'] = 'Lịch sử hoạt động';
 $lang_module['notification_assigned'] = 'Bạn được giao công việc mới: %s';
 $lang_module['notification_status_changed'] = 'Trạng thái công việc "%s" đã thay đổi thành %s';
 $lang_module['notification_commented'] = 'Có bình luận mới trong công việc: %s';
+$lang_module['notification_admin_commented'] = 'Admin đã phản hồi công việc: %s';
 $lang_module['notification_deadline'] = 'Công việc "%s" sắp hết hạn!';
 $lang_module['notifications'] = 'Thông báo';
 $lang_module['mark_all_read'] = 'Đánh dấu tất cả đã đọc';
@@ -134,6 +139,8 @@ $lang_module['no_notifications'] = 'Không có thông báo mới';
 $lang_module['comments'] = 'Bình luận';
 $lang_module['no_comments'] = 'Chưa có bình luận nào';
 $lang_module['comment_placeholder'] = 'Nhập nội dung bình luận...';
+$lang_module['send_comment'] = 'Gửi bình luận';
+$lang_module['optional'] = 'tùy chọn';
 
 // ============================================================================
 // Dashboard & Statistics

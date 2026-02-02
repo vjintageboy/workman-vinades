@@ -63,8 +63,11 @@ if (!$task) {
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
 
-// Kiểm tra quyền - chỉ người được assign mới được comment
-if ($task['assigned_to'] != $user_id) {
+// Kiểm tra quyền - người được assign hoặc người tạo task (admin) mới được comment
+$is_creator = ($task['created_by'] == $user_id);
+$is_assigned = ($task['assigned_to'] == $user_id);
+
+if (!$is_creator && !$is_assigned) {
     if ($is_ajax) {
         die(json_encode(['error' => 1, 'message' => $nv_Lang->getModule('error_permission_denied')]));
     }
@@ -129,10 +132,16 @@ try {
     // Log activity
     workman_log_activity($work_id, 'commented');
     
-    // Notify admin (người tạo task)
+    // Notify các bên liên quan
+    // Nếu user comment thì notify admin (người tạo)
     if ($task['created_by'] > 0 && $task['created_by'] != $user_id) {
         $notify_msg = sprintf($nv_Lang->getModule('notification_commented'), $task['title']);
         workman_notify($task['created_by'], $work_id, 'commented', $notify_msg);
+    }
+    // Nếu admin comment thì notify user (người được assign)
+    if ($task['assigned_to'] > 0 && $task['assigned_to'] != $user_id) {
+        $notify_msg = sprintf($nv_Lang->getModule('notification_admin_commented'), $task['title']);
+        workman_notify($task['assigned_to'], $work_id, 'commented', $notify_msg);
     }
     
     $nv_Cache->delMod($module_name);

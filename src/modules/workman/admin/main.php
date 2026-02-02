@@ -228,6 +228,7 @@ while ($row = $result->fetch()) {
     }
     
     // URLs
+    $url_detail = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=detail&amp;id=' . $row['id'];
     $url_edit = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=add&amp;id=' . $row['id'];
     $url_delete = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=main&amp;delete_id=1&amp;id=' . $row['id'];
     
@@ -247,6 +248,7 @@ while ($row = $result->fetch()) {
         'attachment_icon' => $attachment_icon,
         'attachment_url' => $attachment_url,
         'attachment_name' => $attachment_name,
+        'url_detail' => $url_detail,
         'url_edit' => $url_edit,
         'url_delete' => $url_delete,
     ]);

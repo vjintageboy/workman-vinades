@@ -35,8 +35,17 @@ $sql = 'SELECT w.*, c.title as category_title, c.color as category_color,
 
 $task = $db->query($sql)->fetch();
 
-if (!$task || $task['assigned_to'] != $user_id) {
-    // Không tìm thấy hoặc không phải task của user này
+if (!$task) {
+    // Không tìm thấy task
+    nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+}
+
+// Kiểm tra quyền xem: phải là người được assign hoặc người tạo task
+$is_assigned = ($task['assigned_to'] == $user_id);
+$is_creator = ($task['created_by'] == $user_id);
+
+if (!$is_assigned && !$is_creator) {
+    // Không có quyền xem task này
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
 
@@ -170,8 +179,8 @@ if (!empty($task['attachment'])) {
     }
 }
 
-// Comment form (chỉ hiện nếu task chưa done/cancelled)
-if (!in_array($task['status'], ['done', 'cancelled'])) {
+// Comment form (chỉ hiện nếu task chưa done/cancelled và user có quyền comment)
+if (!in_array($task['status'], ['done', 'cancelled']) && ($is_assigned || $is_creator)) {
     $xtpl->parse('main.comment_form');
 }
 
