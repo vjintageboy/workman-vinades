@@ -10,7 +10,7 @@
         </div>
     </div>
     <div style="flex: 1; min-width: 100px;">
-        <div class="panel panel-default text-center" style="margin-bottom: 0;">
+        <div class="panel panel-draft text-center" style="margin-bottom: 0;">
             <div class="panel-body">
                 <h3 style="margin: 5px 0;">{STATS.draft}</h3>
                 <small>Bản nháp</small>

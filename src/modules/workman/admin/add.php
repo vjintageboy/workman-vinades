@@ -63,14 +63,9 @@ if ($id > 0) {
         $row = $db->query($sql)->fetch();
         if ($row) {
             $request_data = $row;
-            // Convert due_date from DB format (d/m/Y H:i) to HTML5 datetime-local format (Y-m-d\TH:i)
-            if (!empty($request_data['due_date'])) {
-                $dt = DateTime::createFromFormat('d/m/Y H:i', $request_data['due_date']);
-                if ($dt !== false) {
-                    $request_data['due_date'] = $dt->format('Y-m-d\TH:i');
-                } else {
-                    $request_data['due_date'] = '';
-                }
+            // Convert due_date from DB format (TIMESTAMP INT) to HTML5 datetime-local format (Y-m-d\TH:i)
+            if (!empty($request_data['due_date']) && $request_data['due_date'] > 0) {
+                $request_data['due_date'] = date('Y-m-d\TH:i', $request_data['due_date']);
             } else {
                 $request_data['due_date'] = '';
             }
@@ -97,12 +92,12 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
     $request_data['assigned_to'] = $nv_Request->get_int('assigned_to', 'post', 0);
     $due_date_html5 = $nv_Request->get_string('due_date', 'post', '');
     
-    // Convert due_date từ HTML5 datetime-local format (Y-m-d\TH:i) sang DB format (d/m/Y H:i)
-    $due_date_db = '';
+    // Convert due_date từ HTML5 datetime-local format (Y-m-d\TH:i) sang Timestamp
+    $due_date_timestamp = 0;
     if (!empty($due_date_html5)) {
         $dt = DateTime::createFromFormat('Y-m-d\TH:i', $due_date_html5);
         if ($dt !== false) {
-            $due_date_db = $dt->format('d/m/Y H:i');
+            $due_date_timestamp = $dt->getTimestamp();
         }
     }
     
@@ -209,7 +204,7 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
                         description = ' . $db->quote($request_data['description']) . ', 
                         status = ' . $db->quote($request_data['status']) . ', 
                         priority = ' . $db->quote($request_data['priority']) . ', 
-                        due_date = ' . $db->quote($due_date_db) . ',
+                        due_date = ' . intval($due_date_timestamp) . ',
                         attachment = ' . $db->quote($request_data['attachment']) . ',
                         category_id = ' . intval($request_data['category_id']) . ',
                         assigned_to = ' . intval($request_data['assigned_to']) . ',
@@ -246,7 +241,7 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
                         ' . $db->quote($request_data['description']) . ',
                         ' . $db->quote($request_data['status']) . ',
                         ' . $db->quote($request_data['priority']) . ',
-                        ' . $db->quote($due_date_db) . ',
+                        ' . intval($due_date_timestamp) . ',
                         ' . $db->quote($request_data['attachment']) . ',
                         ' . intval($request_data['category_id']) . ',
                         ' . intval($request_data['assigned_to']) . ',
