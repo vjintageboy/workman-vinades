@@ -161,7 +161,7 @@
                     <th width="80">Ưu tiên</th>
                     <th width="90">Hạn chót</th>
                     <th width="50">File</th>
-                    <th width="80">Thao tác</th>
+                    <th class="text-nowrap text-center" width="120">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -195,7 +195,7 @@
                         </a>
                         <!-- END: attachment -->
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-nowrap">
                         <a href="{ROW.url_detail}" class="btn btn-xs btn-info" title="Xem chi tiết">
                             <i class="fa fa-eye"></i>
                         </a>

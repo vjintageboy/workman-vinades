@@ -37,7 +37,7 @@ if (!is_dir(NV_WORKMAN_UPLOAD_REAL_DIR)) {
 $user_id = $user_info['userid'];
 
 // Chỉ xử lý POST request
-if ($nv_Request->get_string('method', 'server') != 'POST') {
+if ($nv_Request->get_string('REQUEST_METHOD', 'server') != 'POST') {
     die(json_encode(['error' => 1, 'message' => 'Invalid request']));
 }
 
