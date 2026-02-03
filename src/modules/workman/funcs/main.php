@@ -25,65 +25,34 @@ $user_id = $user_info['userid'];
 $stats = workman_count_tasks_by_status($user_id);
 
 // ============================================================================
-// Lấy công việc mới (pending) - cần nhận
+// Lấy tất cả công việc (pending, doing, review) trong 1 query duy nhất
 // ============================================================================
-$pending_tasks = [];
+$all_tasks = ['pending' => [], 'doing' => [], 'review' => []];
 $sql = 'SELECT w.*, c.title as category_title, c.color as category_color
         FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
         LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
-        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "pending"
-        ORDER BY w.due_date ASC, w.id DESC
-        LIMIT 5';
-try {
-    $result = $db->query($sql);
-    while ($row = $result->fetch()) {
-        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
-        $pending_tasks[] = $row;
-    }
-} catch (Exception $e) {
-    // ignore
-}
-
-// ============================================================================
-// Lấy công việc đang làm
-// ============================================================================
-$doing_tasks = [];
-$sql = 'SELECT w.*, c.title as category_title, c.color as category_color
-        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
-        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
-        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "doing"
-        ORDER BY w.due_date ASC, w.id DESC
-        LIMIT 5';
+        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 
+        AND w.status IN ("pending", "doing", "review")
+        ORDER BY w.due_date ASC, w.id DESC';
 try {
     $result = $db->query($sql);
     while ($row = $result->fetch()) {
         $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
         $row['is_overdue'] = ($row['due_date'] > 0 && $row['due_date'] < NV_CURRENTTIME);
-        $doing_tasks[] = $row;
+        
+        // Phân loại theo status và giới hạn 5 items mỗi loại
+        $status = $row['status'];
+        if (isset($all_tasks[$status]) && count($all_tasks[$status]) < 5) {
+            $all_tasks[$status][] = $row;
+        }
     }
 } catch (Exception $e) {
     // ignore
 }
 
-// ============================================================================
-// Lấy công việc chờ duyệt
-// ============================================================================
-$review_tasks = [];
-$sql = 'SELECT w.*, c.title as category_title, c.color as category_color
-        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
-        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
-        WHERE w.assigned_to = ' . $user_id . ' AND w.is_deleted = 0 AND w.status = "review"
-        ORDER BY w.id DESC
-        LIMIT 5';
-try {
-    $result = $db->query($sql);
-    while ($row = $result->fetch()) {
-        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
-        $review_tasks[] = $row;
-    }
-} catch (Exception $e) {
-    // ignore
-}
+$pending_tasks = $all_tasks['pending'];
+$doing_tasks = $all_tasks['doing'];
+$review_tasks = $all_tasks['review'];
 
 // ============================================================================
 // Lấy thông báo chưa đọc

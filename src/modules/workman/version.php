@@ -15,7 +15,7 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
 
 $module_version = [
     'name' => 'Workman',
-    'modfuncs' => 'main',
+    'modfuncs' => 'main,add,detail,categories,reports',
     'is_sysmod' => 0,
     'virtual' => 1,
     'version' => '1.0.1',
