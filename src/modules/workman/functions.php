@@ -386,3 +386,33 @@ function workman_count_tasks_by_status($user_id = 0)
     
     return $counts;
 }
+
+/**
+ * Trả về JSON response đúng chuẩn với HTTP header và status code
+ * 
+ * @param array $data Dữ liệu response
+ * @param int $http_code HTTP status code (mặc định auto detect từ error field)
+ * @return void
+ */
+function workman_json_response($data, $http_code = null)
+{
+    // Xóa output buffer nếu có (tránh lỗi do nội dung trước đó)
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    
+    // Set Content-Type header
+    header('Content-Type: application/json; charset=utf-8');
+    
+    // Tự động xác định HTTP status code nếu không được chỉ định
+    if ($http_code === null) {
+        $http_code = (!empty($data['error'])) ? 400 : 200;
+    }
+    
+    // Set HTTP status code
+    http_response_code($http_code);
+    
+    // Gửi response và exit
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit();
+}

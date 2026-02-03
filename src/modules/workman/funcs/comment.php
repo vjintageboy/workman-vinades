@@ -13,7 +13,7 @@ if (!defined('NV_IS_MOD_WORKMAN')) {
 // Kiểm tra user đã đăng nhập
 if (!defined('NV_IS_USER')) {
     if ($nv_Request->isset_request('ajax', 'post')) {
-        die(json_encode(['error' => 1, 'message' => 'Not logged in']));
+        workman_json_response(['error' => 1, 'message' => 'Not logged in']);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=users&' . NV_OP_VARIABLE . '=login');
 }
@@ -38,7 +38,7 @@ $user_id = $user_info['userid'];
 
 // Chỉ xử lý POST request
 if ($nv_Request->get_string('REQUEST_METHOD', 'server') != 'POST') {
-    die(json_encode(['error' => 1, 'message' => 'Invalid request']));
+    workman_json_response(['error' => 1, 'message' => 'Invalid request']);
 }
 
 $work_id = $nv_Request->get_int('work_id', 'post', 0);
@@ -47,7 +47,7 @@ $is_ajax = $nv_Request->get_int('ajax', 'post', 0);
 
 if ($work_id <= 0) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => $nv_Lang->getModule('error_not_found')]));
+        workman_json_response(['error' => 1, 'message' => $nv_Lang->getModule('error_not_found')]);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
@@ -58,7 +58,7 @@ $task = $db->query($sql)->fetch();
 
 if (!$task) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => $nv_Lang->getModule('error_not_found')]));
+        workman_json_response(['error' => 1, 'message' => $nv_Lang->getModule('error_not_found')]);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
@@ -69,7 +69,7 @@ $is_assigned = ($task['assigned_to'] == $user_id);
 
 if (!$is_creator && !$is_assigned) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => $nv_Lang->getModule('error_permission_denied')]));
+        workman_json_response(['error' => 1, 'message' => $nv_Lang->getModule('error_permission_denied')]);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
@@ -77,7 +77,7 @@ if (!$is_creator && !$is_assigned) {
 // Kiểm tra task chưa done/cancelled
 if (in_array($task['status'], ['done', 'cancelled'])) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => $nv_Lang->getModule('error_permission_denied')]));
+        workman_json_response(['error' => 1, 'message' => $nv_Lang->getModule('error_permission_denied')]);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail&id=' . $work_id);
 }
@@ -85,7 +85,7 @@ if (in_array($task['status'], ['done', 'cancelled'])) {
 // Validation
 if (empty(trim($content))) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => 'Nội dung bình luận không được để trống']));
+        workman_json_response(['error' => 1, 'message' => 'Nội dung bình luận không được để trống']);
     }
     nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail&id=' . $work_id);
 }
@@ -150,7 +150,7 @@ try {
         $fullname = trim($user_info['first_name'] . ' ' . $user_info['last_name']);
         $user_fullname = !empty($fullname) ? $fullname : $user_info['username'];
         
-        die(json_encode([
+        workman_json_response([
             'error' => 0,
             'message' => 'Thêm bình luận thành công',
             'comment' => [
@@ -161,12 +161,12 @@ try {
                 'attachment_name' => !empty($attachment) ? basename($attachment) : '',
                 'attachment_url' => !empty($attachment) ? NV_BASE_SITEURL . $attachment : ''
             ]
-        ]));
+        ]);
     }
     
 } catch (Exception $e) {
     if ($is_ajax) {
-        die(json_encode(['error' => 1, 'message' => 'Database error: ' . $e->getMessage()]));
+        workman_json_response(['error' => 1, 'message' => 'Database error: ' . $e->getMessage()]);
     }
 }
 
