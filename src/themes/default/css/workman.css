@@ -1,31 +1,651 @@
 /**
  * Workman Module Styles for Frontend (themes/default)
- * Bootstrap 3 compatible
+ * Modern UI - Bootstrap 3 compatible
  */
 
 /* ==========================================================================
-   Workman Dashboard
+   Dashboard Header
    ========================================================================== */
 
-.workman-dashboard .page-header {
-    margin-top: 0;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #eee;
+.workman-dashboard .dashboard-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
 }
 
-.workman-dashboard .panel-body.text-center h2 {
-    margin: 5px 0;
-    font-size: 32px;
-    font-weight: bold;
+.workman-dashboard .dashboard-header h3 {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
 }
 
-.workman-dashboard .panel-body.text-center p {
+.workman-dashboard .dashboard-header h3 i {
+    color: #428bca;
+    margin-right: 8px;
+}
+
+.workman-dashboard .dashboard-header p {
     margin: 0;
-    color: #666;
+    font-size: 14px;
 }
 
 /* ==========================================================================
-   Workman List
+   Progress Ring Card
+   ========================================================================== */
+
+.progress-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+}
+
+.progress-ring {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: #e9ecef;
+    stroke-width: 8;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: #5cb85c;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.progress-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #5cb85c;
+    line-height: 1;
+}
+
+.progress-label {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    margin-top: 3px;
+}
+
+.progress-info {
+    font-size: 13px;
+    color: #666;
+}
+
+.progress-info strong {
+    color: #5cb85c;
+}
+
+/* ==========================================================================
+   Quick Actions
+   ========================================================================== */
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+    background: #428bca;
+    border-color: #428bca;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(66, 139, 202, 0.3);
+}
+
+.quick-action-btn i {
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   Deadline List
+   ========================================================================== */
+
+.task-panel-danger .task-panel-header {
+    background: linear-gradient(135deg, #d9534f 0%, #c9302c 100%);
+}
+
+.deadline-list {
+    padding: 0 !important;
+}
+
+.deadline-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.deadline-item:hover {
+    background-color: #fff5f5;
+}
+
+.deadline-item:last-child {
+    border-bottom: none;
+}
+
+.deadline-time {
+    min-width: 100px;
+    margin-right: 15px;
+}
+
+.deadline-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.deadline-badge.overdue {
+    background: #d9534f;
+    color: #fff;
+    animation: pulse 1.5s infinite;
+}
+
+.deadline-badge.today {
+    background: #f0ad4e;
+    color: #fff;
+}
+
+.deadline-date {
+    display: block;
+    font-size: 12px;
+    color: #888;
+}
+
+.deadline-info {
+    flex-grow: 1;
+}
+
+.deadline-info a {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+}
+
+.deadline-info a:hover {
+    color: #d9534f;
+}
+
+.deadline-status {
+    font-size: 11px;
+    color: #888;
+    text-transform: capitalize;
+}
+
+/* ==========================================================================
+   Activity Timeline
+   ========================================================================== */
+
+.task-panel-success .task-panel-header {
+    background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: #f5fff5;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-dot {
+    width: 10px;
+    height: 10px;
+    background: #5cb85c;
+    border-radius: 50%;
+    margin-right: 12px;
+    margin-top: 5px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.2);
+}
+
+.activity-content {
+    flex-grow: 1;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.activity-content > div {
+    margin-bottom: 4px;
+}
+
+.activity-user {
+    font-weight: 600;
+    color: #333;
+}
+
+.activity-action {
+    color: #777;
+    margin: 0 2px;
+}
+
+.activity-task {
+    color: #428bca;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.activity-task:hover {
+    text-decoration: underline;
+    color: #2a6496;
+}
+
+.activity-time {
+    display: block;
+    font-size: 11px;
+    color: #999;
+    margin-top: 3px;
+}
+
+/* ==========================================================================
+   Modern Stats Cards
+   ========================================================================== */
+
+.stats-row {
+    margin-bottom: 15px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-card .stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 18px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+
+.stat-card .stat-content h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.stat-card .stat-content span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card Colors with Gradients */
+.stat-pending {
+    background: linear-gradient(135deg, #5bc0de 0%, #31a2c3 100%);
+}
+
+.stat-doing {
+    background: linear-gradient(135deg, #f0ad4e 0%, #eb9316 100%);
+}
+
+.stat-review {
+    background: linear-gradient(135deg, #428bca 0%, #2a6496 100%);
+}
+
+.stat-done {
+    background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+}
+
+/* ==========================================================================
+   Action Bar
+   ========================================================================== */
+
+.action-bar {
+    margin-bottom: 25px;
+}
+
+.action-bar .btn-lg {
+    padding: 12px 25px;
+    font-size: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(66, 139, 202, 0.3);
+    transition: all 0.3s ease;
+}
+
+.action-bar .btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(66, 139, 202, 0.4);
+}
+
+/* ==========================================================================
+   Modern Task Panels
+   ========================================================================== */
+
+.task-panel {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-panel-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #fff;
+}
+
+.task-panel-header .panel-title-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.task-panel-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.task-panel-header .notification-count {
+    background: #d9534f;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Panel Color Variants */
+.task-panel-info .task-panel-header {
+    background: linear-gradient(135deg, #5bc0de 0%, #31a2c3 100%);
+}
+
+.task-panel-warning .task-panel-header {
+    background: linear-gradient(135deg, #f0ad4e 0%, #eb9316 100%);
+}
+
+.task-panel-primary .task-panel-header {
+    background: linear-gradient(135deg, #428bca 0%, #2a6496 100%);
+}
+
+.task-panel-default .task-panel-header {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.task-panel-body {
+    padding: 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Modern Task Items
+   ========================================================================== */
+
+.task-item-modern {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.task-item-modern:hover {
+    background-color: #f8f9fa;
+}
+
+.task-item-modern:last-child {
+    border-bottom: none;
+}
+
+.task-priority-bar {
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    margin-right: 15px;
+}
+
+.priority-low { background: #5cb85c; }
+.priority-medium { background: #5bc0de; }
+.priority-high { background: #f0ad4e; }
+.priority-urgent { background: #d9534f; }
+
+.task-content {
+    flex-grow: 1;
+}
+
+.task-content .task-title {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+.task-content .task-title:hover {
+    color: #428bca;
+}
+
+.task-category {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #fff;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.task-meta {
+    font-size: 12px;
+    color: #888;
+}
+
+.task-meta i {
+    margin-right: 4px;
+}
+
+.badge-overdue {
+    display: inline-block;
+    background: #d9534f;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-left: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.task-action .btn {
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+/* ==========================================================================
+   Modern Notification Items
+   ========================================================================== */
+
+.notification-item-modern {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.notification-item-modern:hover {
+    background-color: #f8faff;
+    transform: translateX(3px);
+}
+
+.notification-item-modern:last-child {
+    border-bottom: none;
+}
+
+.notification-item-modern .notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5bc0de 0%, #428bca 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.notification-item-modern .notif-content {
+    flex-grow: 1;
+}
+
+.notification-item-modern .notif-content a {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+.notification-item-modern .notif-content a:hover {
+    color: #428bca;
+}
+
+.notification-item-modern .notif-content small {
+    display: block;
+    font-size: 11px;
+    color: #999;
+}
+
+.notification-item-modern .notif-content small {
+    color: #888;
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: #aaa;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state.small {
+    padding: 30px 20px;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   Workman List (keep existing)
    ========================================================================== */
 
 .workman-list .page-header {
@@ -41,46 +661,7 @@
 }
 
 /* ==========================================================================
-   Task Item
-   ========================================================================== */
-
-.task-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
-}
-
-.task-item:hover {
-    background-color: #f9f9f9;
-}
-
-.task-item:last-child {
-    border-bottom: none;
-}
-
-/* ==========================================================================
-   Notification Item
-   ========================================================================== */
-
-.notification-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.notification-item:hover {
-    background-color: #f9f9f9;
-}
-
-.notification-item:last-child {
-    border-bottom: none;
-}
-
-.notification-item.unread {
-    background-color: #e7f3ff;
-}
-
-/* ==========================================================================
-   Task Detail
+   Task Detail (keep existing)
    ========================================================================== */
 
 .news_column {
@@ -99,7 +680,7 @@
 }
 
 /* ==========================================================================
-   Comments
+   Comments (keep existing)
    ========================================================================== */
 
 .media.margin-bottom {
@@ -117,7 +698,7 @@
 }
 
 /* ==========================================================================
-   Comment Form
+   Comment Form (keep existing)
    ========================================================================== */
 
 .comment-form textarea {
@@ -128,10 +709,6 @@
 .comment-form .form-control {
     width: 100%;
 }
-
-/* ==========================================================================
-   Labels & Badges
-   ========================================================================== */
 
 .label {
     font-weight: normal;
@@ -162,6 +739,34 @@
 }
 
 /* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.workman-dashboard {
+    animation: fadeIn 0.3s ease;
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -178,5 +783,28 @@
         float: none !important;
         display: block;
         margin-top: 10px;
+    }
+    
+    .quick-actions {
+        justify-content: center;
+    }
+    
+    .stat-card {
+        margin-bottom: 10px;
+    }
+    
+    .progress-card {
+        margin-bottom: 15px;
+    }
+    
+    .deadline-item,
+    .activity-item {
+        padding: 10px 15px;
+    }
+    
+    /* Trên mobile 3 cột task sẽ xếp dọc */
+    .task-panel {
+        min-height: auto;
+        margin-bottom: 15px;
     }
 }

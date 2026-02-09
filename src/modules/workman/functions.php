@@ -416,3 +416,32 @@ function workman_json_response($data, $http_code = null)
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit();
 }
+
+/**
+ * Chuyển timestamp thành "time ago" format
+ * 
+ * @param int $timestamp Unix timestamp
+ * @return string
+ */
+function workman_time_ago($timestamp)
+{
+    $diff = NV_CURRENTTIME - $timestamp;
+    
+    if ($diff < 60) {
+        return 'Vừa xong';
+    } elseif ($diff < 3600) {
+        $mins = floor($diff / 60);
+        return $mins . ' phút trước';
+    } elseif ($diff < 86400) {
+        $hours = floor($diff / 3600);
+        return $hours . ' giờ trước';
+    } elseif ($diff < 604800) {
+        $days = floor($diff / 86400);
+        return $days . ' ngày trước';
+    } elseif ($diff < 2592000) {
+        $weeks = floor($diff / 604800);
+        return $weeks . ' tuần trước';
+    } else {
+        return nv_date('d/m/Y', $timestamp);
+    }
+}
