@@ -116,10 +116,19 @@ $lang_module['priority_class_urgent'] = 'danger';
 $lang_module['log_created'] = 'Tạo mới công việc';
 $lang_module['log_updated'] = 'Cập nhật công việc';
 $lang_module['log_status_changed'] = 'Thay đổi trạng thái';
+$lang_module['log_priority_changed'] = 'Thay đổi độ ưu tiên';
 $lang_module['log_assigned'] = 'Giao việc';
 $lang_module['log_commented'] = 'Thêm bình luận';
 $lang_module['log_deleted'] = 'Xóa công việc';
 $lang_module['activity_history'] = 'Lịch sử hoạt động';
+
+// Quick change
+$lang_module['quick_status_change'] = 'Thay đổi nhanh trạng thái';
+$lang_module['quick_priority_change'] = 'Thay đổi nhanh độ ưu tiên';
+$lang_module['update_priority'] = 'Cập nhật độ ưu tiên';
+$lang_module['confirm_update_priority'] = 'Bạn có chắc chắn muốn cập nhật độ ưu tiên?';
+$lang_module['status_updated_success'] = 'Cập nhật trạng thái thành công!';
+$lang_module['priority_updated_success'] = 'Cập nhật độ ưu tiên thành công!';
 
 // ============================================================================
 // Notifications

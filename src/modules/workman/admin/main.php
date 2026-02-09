@@ -133,7 +133,13 @@ $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['admi
 // Phân trang
 // ============================================================================
 $page = $nv_Request->get_int('page', 'get', 1);
-$per_page = 20;
+$per_page = $nv_Request->get_int('per_page', 'get', 20);
+
+// Validate per_page - only allow specific values
+$allowed_per_page = [10, 20, 50, 100];
+if (!in_array($per_page, $allowed_per_page)) {
+    $per_page = 20;
+}
 
 // Build base URL with filters
 $base_url_params = [
@@ -145,6 +151,7 @@ if (!empty($filter_status)) $base_url_params[] = 'filter_status=' . $filter_stat
 if ($filter_category > 0) $base_url_params[] = 'filter_category=' . $filter_category;
 if ($filter_assigned > 0) $base_url_params[] = 'filter_assigned=' . $filter_assigned;
 if (!empty($filter_priority)) $base_url_params[] = 'filter_priority=' . $filter_priority;
+if ($per_page != 20) $base_url_params[] = 'per_page=' . $per_page;
 
 $base_url = NV_BASE_ADMINURL . 'index.php?' . implode('&', $base_url_params);
 
@@ -323,7 +330,7 @@ $xtpl->parse('main.filter_form');
 // URLs
 $url_add = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add';
 $url_categories = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=categories';
-$url_reports = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=reports';
+$url_reports = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=dashboard';
 
 $xtpl->assign('URL_ADD', $url_add);
 $xtpl->assign('URL_CATEGORIES', $url_categories);
@@ -339,7 +346,17 @@ foreach ($status_list as $key => $label) {
     $xtpl->parse('main.bulk_status_option');
 }
 
-// Pagination
+// Per page options (always show)
+$xtpl->assign('TOTAL_ITEMS', $num_items);
+foreach ($allowed_per_page as $pp_value) {
+    $xtpl->assign('PER_PAGE_OPTION', [
+        'value' => $pp_value,
+        'selected' => ($per_page == $pp_value) ? 'selected' : ''
+    ]);
+    $xtpl->parse('main.per_page_option');
+}
+
+// Pagination (only when multiple pages)
 if (!empty($generate_page)) {
     $xtpl->assign('GENERATE_PAGE', $generate_page);
     $xtpl->parse('main.generate_page');

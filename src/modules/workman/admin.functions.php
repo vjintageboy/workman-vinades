@@ -13,13 +13,15 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
     die('Stop!!!');
 }
 
-// $allow_func = [
-//     'main',
-//     'add',
-//     'detail',
-//     'categories',
-//     'reports'
-// ];
+$allow_func = [
+    'dashboard',
+    'main',
+    'add',
+    'detail',
+    'categories',
+    'reports',
+    'ajax'
+];
 
 define('NV_IS_FILE_ADMIN', true);
 

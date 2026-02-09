@@ -69,57 +69,83 @@
 <!-- BEGIN: filter_form -->
 <!-- Filters -->
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <i class="fa fa-filter"></i> Bộ lọc
+    <div class="panel-heading" style="padding: 10px 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none;">
+        <i class="fa fa-filter"></i> <strong>Bộ lọc tìm kiếm</strong>
     </div>
-    <div class="panel-body">
-        <form method="get" action="{FORM_ACTION}" class="form-inline">
+    <div class="panel-body" style="padding: 20px; background: #f8f9fa;">
+        <form method="get" action="{FORM_ACTION}">
             <input type="hidden" name="{LANG_VAR}" value="{LANG_DATA}">
             <input type="hidden" name="{NAME_VAR}" value="{MODULE_NAME}">
             <input type="hidden" name="{OP_VAR}" value="main">
             
-            <div class="form-group" style="margin-right: 10px;">
-                <label>Trạng thái:</label>
-                <select name="filter_status" class="form-control input-sm">
-                    <option value="">-- Tất cả --</option>
-                    <!-- BEGIN: status_option -->
-                    <option value="{STATUS_OPTION.key}" {STATUS_OPTION.selected}>{STATUS_OPTION.label}</option>
-                    <!-- END: status_option -->
-                </select>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                            <i class="fa fa-flag" style="color: #667eea; margin-right: 5px;"></i> Trạng thái
+                        </label>
+                        <select name="filter_status" class="form-control" style="height: 38px; border-radius: 6px; border: 1px solid #ced4da; box-shadow: none;">
+                            <option value="">Tất cả trạng thái</option>
+                            <!-- BEGIN: status_option -->
+                            <option value="{STATUS_OPTION.key}" {STATUS_OPTION.selected}>{STATUS_OPTION.label}</option>
+                            <!-- END: status_option -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                            <i class="fa fa-folder-open" style="color: #28a745; margin-right: 5px;"></i> Danh mục
+                        </label>
+                        <select name="filter_category" class="form-control" style="height: 38px; border-radius: 6px; border: 1px solid #ced4da; box-shadow: none;">
+                            <option value="">Tất cả danh mục</option>
+                            <!-- BEGIN: category_option -->
+                            <option value="{CATEGORY_OPTION.id}" {CATEGORY_OPTION.selected}>{CATEGORY_OPTION.title}</option>
+                            <!-- END: category_option -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                            <i class="fa fa-user" style="color: #17a2b8; margin-right: 5px;"></i> Người thực hiện
+                        </label>
+                        <select name="filter_assigned" class="form-control" style="height: 38px; border-radius: 6px; border: 1px solid #ced4da; box-shadow: none;">
+                            <option value="">Tất cả người dùng</option>
+                            <!-- BEGIN: user_option -->
+                            <option value="{USER_OPTION.userid}" {USER_OPTION.selected}>{USER_OPTION.fullname}</option>
+                            <!-- END: user_option -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                            <i class="fa fa-exclamation-circle" style="color: #ffc107; margin-right: 5px;"></i> Độ ưu tiên
+                        </label>
+                        <select name="filter_priority" class="form-control" style="height: 38px; border-radius: 6px; border: 1px solid #ced4da; box-shadow: none;">
+                            <option value="">Tất cả mức ưu tiên</option>
+                            <!-- BEGIN: priority_option -->
+                            <option value="{PRIORITY_OPTION.key}" {PRIORITY_OPTION.selected}>{PRIORITY_OPTION.label}</option>
+                            <!-- END: priority_option -->
+                        </select>
+                    </div>
+                </div>
             </div>
             
-            <div class="form-group" style="margin-right: 10px;">
-                <label>Danh mục:</label>
-                <select name="filter_category" class="form-control input-sm">
-                    <option value="">-- Tất cả --</option>
-                    <!-- BEGIN: category_option -->
-                    <option value="{CATEGORY_OPTION.id}" {CATEGORY_OPTION.selected}>{CATEGORY_OPTION.title}</option>
-                    <!-- END: category_option -->
-                </select>
+            <div class="row" style="margin-top: 15px;">
+                <div class="col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 25px; border-radius: 6px; font-weight: 500; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);">
+                        <i class="fa fa-search"></i> Tìm kiếm
+                    </button>
+                    <a href="{FORM_ACTION}?{LANG_VAR}={LANG_DATA}&{NAME_VAR}={MODULE_NAME}&{OP_VAR}=main" class="btn btn-default" style="padding: 8px 25px; border-radius: 6px; font-weight: 500; margin-left: 10px; border: 1px solid #ced4da;">
+                        <i class="fa fa-refresh"></i> Đặt lại
+                    </a>
+                </div>
             </div>
-            
-            <div class="form-group" style="margin-right: 10px;">
-                <label>Người thực hiện:</label>
-                <select name="filter_assigned" class="form-control input-sm">
-                    <option value="">-- Tất cả --</option>
-                    <!-- BEGIN: user_option -->
-                    <option value="{USER_OPTION.userid}" {USER_OPTION.selected}>{USER_OPTION.fullname}</option>
-                    <!-- END: user_option -->
-                </select>
-            </div>
-            
-            <div class="form-group" style="margin-right: 10px;">
-                <label>Ưu tiên:</label>
-                <select name="filter_priority" class="form-control input-sm">
-                    <option value="">-- Tất cả --</option>
-                    <!-- BEGIN: priority_option -->
-                    <option value="{PRIORITY_OPTION.key}" {PRIORITY_OPTION.selected}>{PRIORITY_OPTION.label}</option>
-                    <!-- END: priority_option -->
-                </select>
-            </div>
-            
-            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Lọc</button>
-            <a href="?" class="btn btn-sm btn-default">Reset</a>
         </form>
     </div>
 </div>
@@ -222,11 +248,21 @@
 </div>
 </form>
 
-<!-- BEGIN: generate_page -->
-<div class="text-center">
-    {GENERATE_PAGE}
+<!-- Per page selector (always visible) -->
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 15px;">
+    <div>
+        <span class="text-muted">Hiển thị: </span>
+        <select id="per_page_select" class="form-control input-sm" style="width: auto; display: inline-block;" onchange="changePerPage(this.value);">
+            <!-- BEGIN: per_page_option -->
+            <option value="{PER_PAGE_OPTION.value}" {PER_PAGE_OPTION.selected}>{PER_PAGE_OPTION.value} / trang</option>
+            <!-- END: per_page_option -->
+        </select>
+        <span class="text-muted" style="margin-left: 10px;">Tổng: <strong>{TOTAL_ITEMS}</strong> công việc</span>
+    </div>
+    <!-- BEGIN: generate_page -->
+    <div>{GENERATE_PAGE}</div>
+    <!-- END: generate_page -->
 </div>
-<!-- END: generate_page -->
 
 <script>
 // Check all / uncheck all
@@ -260,6 +296,16 @@ function nv_delete_work(id) {
         window.location.href = script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=main&delete_id=1&id=' + id;
     }
     return false;
+}
+</script>
+
+<script>
+// Change per page
+function changePerPage(value) {
+    var url = new URL(window.location.href);
+    url.searchParams.set('per_page', value);
+    url.searchParams.delete('page'); // Reset to first page
+    window.location.href = url.toString();
 }
 </script>
 <!-- END: main -->

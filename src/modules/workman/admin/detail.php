@@ -231,6 +231,10 @@ $tpl->assign('LOGS', $logs);
 $status_list = workman_get_status_list();
 $tpl->assign('STATUS_LIST', $status_list);
 
+// Priority list for quick change
+$priority_list = workman_get_priority_list();
+$tpl->assign('PRIORITY_LIST', $priority_list);
+
 $contents = $tpl->fetch('detail.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';

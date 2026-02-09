@@ -14,7 +14,7 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 
 // Helper functions are loaded automatically from admin.functions.php
 
-$page_title = $nv_Lang->getModule('reports');
+$page_title = $nv_Lang->getModule('dashboard');
 
 // ============================================================================
 // Lấy thống kê tổng quan
@@ -117,10 +117,70 @@ try {
 }
 
 // ============================================================================
+// Thống kê theo Priority (NEW)
+// ============================================================================
+$stats_by_priority = [
+    'low' => 0,
+    'normal' => 0,
+    'high' => 0,
+    'urgent' => 0
+];
+$sql = 'SELECT priority, COUNT(*) as count FROM ' . $db_config['prefix'] . '_' . $module_data . ' 
+        WHERE is_deleted = 0 AND status NOT IN ("done", "cancelled") 
+        GROUP BY priority';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        if (isset($stats_by_priority[$row['priority']])) {
+            $stats_by_priority[$row['priority']] = intval($row['count']);
+        }
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+// ============================================================================
+// Công việc sắp đến hạn - 7 ngày tới (NEW)
+// ============================================================================
+$upcoming_tasks = [];
+$next_week = NV_CURRENTTIME + (7 * 86400);
+$sql = 'SELECT w.*, c.title as category_title, c.color as category_color, u.username, u.first_name, u.last_name
+        FROM ' . $db_config['prefix'] . '_' . $module_data . ' w
+        LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . '_categories c ON w.category_id = c.id
+        LEFT JOIN ' . $db_config['prefix'] . '_users u ON w.assigned_to = u.userid
+        WHERE w.is_deleted = 0 
+        AND w.due_date > ' . NV_CURRENTTIME . ' 
+        AND w.due_date <= ' . $next_week . '
+        AND w.status NOT IN ("done", "cancelled")
+        ORDER BY w.due_date ASC
+        LIMIT 10';
+try {
+    $result = $db->query($sql);
+    while ($row = $result->fetch()) {
+        $row['due_date_formatted'] = nv_date('d/m/Y', $row['due_date']);
+        $row['days_remaining'] = ceil(($row['due_date'] - NV_CURRENTTIME) / 86400);
+        $fullname = trim($row['first_name'] . ' ' . $row['last_name']);
+        $row['assigned_name'] = !empty($fullname) ? $fullname : ($row['username'] ?: 'Chưa giao');
+        $upcoming_tasks[] = $row;
+    }
+} catch (Exception $e) {
+    // ignore
+}
+
+// ============================================================================
+// Tỷ lệ hoàn thành (NEW)
+// ============================================================================
+$completion_rate = 0;
+$active_tasks = $stats['total'] - $stats['cancelled'];
+if ($active_tasks > 0) {
+    $completion_rate = round(($stats['done'] / $active_tasks) * 100, 1);
+}
+
+// ============================================================================
 // Render template
 // ============================================================================
 $tpl = new \NukeViet\Template\NVSmarty();
-$tpl->setTemplateDir(get_module_tpl_dir('reports.tpl'));
+$tpl->setTemplateDir(get_module_tpl_dir('dashboard.tpl'));
 
 $tpl->assign('LANG', $nv_Lang);
 $tpl->assign('GLANG', $nv_Lang);
@@ -129,7 +189,7 @@ $tpl->assign('MODULE_NAME', $module_name);
 // Stats cards
 $tpl->assign('STATS', $stats);
 
-// Chart data for JS (JSON)
+// Chart data for Status (Pie/Doughnut)
 $chart_data = [
     'labels' => [$nv_Lang->getModule('status_draft'), $nv_Lang->getModule('status_pending'), 
                  $nv_Lang->getModule('status_doing'), $nv_Lang->getModule('status_review'),
@@ -138,6 +198,15 @@ $chart_data = [
     'colors' => ['#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#dc3545']
 ];
 $tpl->assign('CHART_DATA', json_encode($chart_data));
+
+// Chart data for Priority (Bar chart) - NEW
+$priority_chart_data = [
+    'labels' => [$nv_Lang->getModule('priority_low'), $nv_Lang->getModule('priority_normal'), 
+                 $nv_Lang->getModule('priority_high'), $nv_Lang->getModule('priority_urgent')],
+    'data' => [$stats_by_priority['low'], $stats_by_priority['normal'], $stats_by_priority['high'], $stats_by_priority['urgent']],
+    'colors' => ['#6c757d', '#17a2b8', '#ffc107', '#dc3545']
+];
+$tpl->assign('PRIORITY_CHART_DATA', json_encode($priority_chart_data));
 
 // Stats by user
 $tpl->assign('STATS_BY_USER', $stats_by_user);
@@ -152,14 +221,26 @@ foreach ($overdue_tasks as &$task) {
 unset($task);
 $tpl->assign('OVERDUE_TASKS', $overdue_tasks);
 
+// Upcoming tasks - add edit URLs (NEW)
+foreach ($upcoming_tasks as &$task) {
+    $task['url_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=add&amp;id=' . $task['id'];
+}
+unset($task);
+$tpl->assign('UPCOMING_TASKS', $upcoming_tasks);
+
 // Recent activities
 $tpl->assign('RECENT_ACTIVITIES', $recent_activities);
+
+// Completion rate (NEW)
+$tpl->assign('COMPLETION_RATE', $completion_rate);
+$tpl->assign('ACTIVE_TASKS', $active_tasks);
+$tpl->assign('DONE_TASKS', $stats['done']);
 
 // URLs
 $url_back = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 $tpl->assign('URL_BACK', $url_back);
 
-$contents = $tpl->fetch('reports.tpl');
+$contents = $tpl->fetch('dashboard.tpl');
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);

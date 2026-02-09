@@ -219,6 +219,24 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Quick Priority Change -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <strong><i class="fa-solid fa-flag"></i>
+                            {$LANG->getModule('quick_priority_change')}</strong>
+                    </div>
+                    <div class="card-body">
+                        <select id="quick_priority" class="form-select">
+                            {foreach $PRIORITY_LIST as $key => $label}
+                            <option value="{$key}" {if $TASK.priority==$key}selected{/if}>{$label}</option>
+                            {/foreach}
+                        </select>
+                        <button type="button" class="btn btn-warning w-100 mt-2" onclick="updatePriority();">
+                            <i class="fa-solid fa-save"></i> {$LANG->getModule('update_priority')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -247,6 +265,31 @@
                 }
             }
         };
-        xhr.send('id={$TASK_ID}&status=' + newStatus);
+        xhr.send('action=update_status&id={$TASK_ID}&status=' + newStatus);
+    }
+
+    function updatePriority() {
+        var newPriority = document.getElementById('quick_priority').value;
+        if (!confirm('{$LANG->getModule("confirm_update_priority")}')) return;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{$smarty.const.NV_BASE_ADMINURL}index.php?{$smarty.const.NV_LANG_VARIABLE}={$smarty.const.NV_LANG_DATA}&{$smarty.const.NV_NAME_VARIABLE}={$MODULE_NAME}&{$smarty.const.NV_OP_VARIABLE}=ajax', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var res = JSON.parse(xhr.responseText);
+                    if (res.error === 0) {
+                        alert(res.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + res.message);
+                    }
+                } catch (e) {
+                    alert('An error occurred');
+                }
+            }
+        };
+        xhr.send('action=update_priority&id={$TASK_ID}&priority=' + newPriority);
     }
 </script>

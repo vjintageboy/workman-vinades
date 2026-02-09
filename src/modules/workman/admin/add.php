@@ -83,7 +83,8 @@ $success = '';
 // ============================================================================
 // Xử lý form submit
 // ============================================================================
-if ($nv_Request->get_int('submit', 'post') == 1) {
+$submit_action = $nv_Request->get_int('submit', 'post', 0);
+if ($submit_action > 0) {
     $request_data['title'] = $nv_Request->get_string('title', 'post', '');
     $request_data['description'] = $nv_Request->get_textarea('description', '', 'post');
     $request_data['status'] = $nv_Request->get_string('status', 'post', 'draft');
@@ -265,7 +266,15 @@ if ($nv_Request->get_int('submit', 'post') == 1) {
                 }
 
                 $nv_Cache->delMod($module_name);
-                nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+                
+                // Redirect based on submit action
+                if ($submit_action == 2) {
+                    // Save & Add New - redirect to empty add form
+                    nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=add');
+                } else {
+                    // Normal save - redirect to list
+                    nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+                }
                 
             } catch (Exception $e) {
                 $error = 'Database error: ' . $e->getMessage();
