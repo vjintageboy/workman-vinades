@@ -41,7 +41,7 @@ $sql = 'SELECT w.*, c.title as category_title, c.color as category_color
 try {
     $result = $db->query($sql);
     while ($row = $result->fetch()) {
-        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
+        $row['due_date_formatted'] = $row['due_date'] > 0 ? workman_due_date_relative($row['due_date']) : '';
         $row['is_overdue'] = ($row['due_date'] > 0 && $row['due_date'] < NV_CURRENTTIME);
         
         // Phân loại theo status và giới hạn 5 items mỗi loại
@@ -72,6 +72,7 @@ try {
     $result = $db->query($sql);
     while ($row = $result->fetch()) {
         $row['created_at_formatted'] = nv_date('d/m/Y H:i', $row['created_at']);
+        $row['time_ago'] = workman_time_ago($row['created_at']);
         $notifications[] = $row;
     }
 } catch (Exception $e) {

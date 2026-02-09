@@ -81,7 +81,7 @@
     
     <!-- Quick Actions -->
     <div class="quick-actions">
-        <a href="{URL_LIST}" class="quick-action-btn">
+        <a href="{URL_LIST}" class="quick-action-btn active">
             <i class="fa fa-list-ul"></i>
             <span>Tất cả công việc</span>
         </a>
@@ -243,41 +243,9 @@
         </div>
     </div>
     
-    <!-- Activity & Notifications - 2 Columns -->
+    <!-- Notifications - Full Width -->
     <div class="row">
-        <!-- Recent Activity -->
-        <div class="col-xs-24 col-sm-12">
-            <div class="task-panel task-panel-success">
-                <div class="task-panel-header">
-                    <div class="panel-title-icon"><i class="fa fa-history"></i></div>
-                    <h4>Hoạt động gần đây</h4>
-                </div>
-                <div class="task-panel-body">
-                    <!-- BEGIN: activity -->
-                    <div class="activity-item">
-                        <div class="activity-dot"></div>
-                        <div class="activity-content">
-                            <div>
-                                <strong class="activity-user">{ACTIVITY.user_fullname}</strong>
-                                <span class="activity-action">{ACTIVITY.action_text}:</span>
-                                <a href="{ACTIVITY.url_detail}" class="activity-task">{ACTIVITY.work_title}</a>
-                            </div>
-                            <small class="activity-time"><i class="fa fa-clock-o"></i> {ACTIVITY.time_ago}</small>
-                        </div>
-                    </div>
-                    <!-- END: activity -->
-                    <!-- BEGIN: no_activities -->
-                    <div class="empty-state small">
-                        <i class="fa fa-clock-o"></i>
-                        <p>Chưa có hoạt động</p>
-                    </div>
-                    <!-- END: no_activities -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Notifications -->
-        <div class="col-xs-24 col-sm-12">
+        <div class="col-xs-24">
             <div class="task-panel task-panel-default">
                 <div class="task-panel-header">
                     <div class="panel-title-icon"><i class="fa fa-bell"></i></div>
@@ -294,7 +262,7 @@
                         </div>
                         <div class="notif-content">
                             <a href="{NOTIF.url_detail}">{NOTIF.message}</a>
-                            <small>{NOTIF.created_at_formatted}</small>
+                            <small><i class="fa fa-clock-o"></i> {NOTIF.time_ago}</small>
                         </div>
                     </div>
                     <!-- END: notification -->

@@ -445,3 +445,59 @@ function workman_time_ago($timestamp)
         return nv_date('d/m/Y', $timestamp);
     }
 }
+
+/**
+ * Chuyển due date timestamp thành format tương đối
+ * Hiển thị "Còn X ngày", "Hôm nay", "Quá hạn X ngày"
+ * 
+ * @param int $timestamp Unix timestamp của due date
+ * @return string
+ */
+function workman_due_date_relative($timestamp)
+{
+    if ($timestamp <= 0) {
+        return '';
+    }
+    
+    $diff = $timestamp - NV_CURRENTTIME;
+    $is_today = (date('Y-m-d', $timestamp) == date('Y-m-d', NV_CURRENTTIME));
+    
+    if ($is_today) {
+        return 'Hôm nay';
+    }
+    
+    if ($diff > 0) {
+        // Tương lai
+        if ($diff < 3600) {
+            $mins = ceil($diff / 60);
+            return 'Còn ' . $mins . ' phút';
+        } elseif ($diff < 86400) {
+            $hours = ceil($diff / 3600);
+            return 'Còn ' . $hours . ' giờ';
+        } elseif ($diff < 604800) {
+            $days = ceil($diff / 86400);
+            return 'Còn ' . $days . ' ngày';
+        } elseif ($diff < 2592000) {
+            $weeks = ceil($diff / 604800);
+            return 'Còn ' . $weeks . ' tuần';
+        } else {
+            return nv_date('d/m/Y', $timestamp);
+        }
+    } else {
+        // Quá hạn
+        $diff = abs($diff);
+        if ($diff < 3600) {
+            $mins = floor($diff / 60);
+            return 'Quá hạn ' . $mins . ' phút';
+        } elseif ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return 'Quá hạn ' . $hours . ' giờ';
+        } elseif ($diff < 604800) {
+            $days = floor($diff / 86400);
+            return 'Quá hạn ' . $days . ' ngày';
+        } else {
+            $weeks = floor($diff / 604800);
+            return 'Quá hạn ' . $weeks . ' tuần';
+        }
+    }
+}
