@@ -1,0 +1,20 @@
+{
+    "info": {
+        "name": "Block_filter",
+        "author": "Workman Module",
+        "website": "",
+        "description": "Bộ lọc công việc theo trạng thái, danh mục, ưu tiên"
+    },
+    "i18n": {
+        "en": {
+            "info": {
+                "name": "Task Filter"
+            }
+        },
+        "vi": {
+            "info": {
+                "name": "Bộ lọc công việc"
+            }
+        }
+    }
+}

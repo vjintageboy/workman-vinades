@@ -8,9 +8,21 @@
    ========================================================================== */
 
 .workman-dashboard .dashboard-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap;
+    gap: 15px;
     margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%) !important;
+    border-radius: 12px !important;
+    border: 1px solid #eee !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.workman-dashboard .dashboard-header .header-content {
+    flex: 1;
 }
 
 .workman-dashboard .dashboard-header h3 {
@@ -30,6 +42,26 @@
     font-size: 14px;
 }
 
+.workman-dashboard .dashboard-header .btn {
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 500;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    height: auto !important;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.workman-dashboard .dashboard-header .btn:hover {
+    background: #f8f9fa;
+    border-color: #428bca;
+    color: #428bca;
+}
+
+
 /* ==========================================================================
    Progress Ring Card
    ========================================================================== */
@@ -37,7 +69,7 @@
 .progress-card {
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     padding: 20px;
     text-align: center;
     margin-bottom: 20px;
@@ -280,7 +312,7 @@
     line-height: 1.6;
 }
 
-.activity-content > div {
+.activity-content>div {
     margin-bottom: 4px;
 }
 
@@ -326,13 +358,13 @@
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .stat-card .stat-icon {
@@ -344,7 +376,7 @@
     justify-content: center;
     margin-right: 12px;
     font-size: 18px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: #fff;
 }
 
@@ -358,7 +390,7 @@
 
 .stat-card .stat-content span {
     font-size: 11px;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255, 255, 255, 0.85);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -408,7 +440,7 @@
 .task-panel {
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
     overflow: hidden;
     min-height: 300px;
@@ -427,7 +459,7 @@
     width: 40px;
     height: 40px;
     border-radius: 8px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -502,10 +534,21 @@
     margin-right: 15px;
 }
 
-.priority-low { background: #5cb85c; }
-.priority-medium { background: #5bc0de; }
-.priority-high { background: #f0ad4e; }
-.priority-urgent { background: #d9534f; }
+.priority-low {
+    background: #5cb85c;
+}
+
+.priority-medium {
+    background: #5bc0de;
+}
+
+.priority-high {
+    background: #f0ad4e;
+}
+
+.priority-urgent {
+    background: #d9534f;
+}
 
 .task-content {
     flex-grow: 1;
@@ -555,8 +598,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .task-action .btn {
@@ -589,7 +639,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #5bc0de 0%, #428bca 100%);
+    background: #95a5a6;
+    /* Màu xám cho tin đã đọc */
     color: #fff;
     display: flex;
     align-items: center;
@@ -597,7 +648,27 @@
     margin-right: 12px;
     flex-shrink: 0;
     font-size: 16px;
+    transition: all 0.2s ease;
 }
+
+/* Unread State - Override styles */
+.notification-item-modern.unread {
+    background-color: #f0f7ff;
+    border-left: 3px solid #428bca;
+}
+
+.notification-item-modern.unread .notif-content a {
+    font-weight: 700;
+    color: #000;
+}
+
+.notification-item-modern.unread .notif-icon {
+    background: linear-gradient(135deg, #428bca 0%, #2a6496 100%) !important;
+    box-shadow: 0 2px 5px rgba(66, 139, 202, 0.3);
+    animation: pulse 2s infinite;
+}
+
+
 
 .notification-item-modern .notif-content {
     flex-grow: 1;
@@ -666,11 +737,11 @@
     margin-top: 0;
 }
 
-.workman-list .table > thead > tr > th {
+.workman-list .table>thead>tr>th {
     background-color: #f9f9f9;
 }
 
-.workman-list .table > tbody > tr:hover {
+.workman-list .table>tbody>tr:hover {
     background-color: #f5f5f5;
 }
 
@@ -757,9 +828,12 @@
    ========================================================================== */
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.6;
     }
@@ -770,6 +844,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -788,34 +863,34 @@
     .workman-dashboard .col-md-3 {
         margin-bottom: 15px;
     }
-    
+
     .workman-list .table-responsive {
         border: none;
     }
-    
+
     .pull-right.btn {
         float: none !important;
         display: block;
         margin-top: 10px;
     }
-    
+
     .quick-actions {
         justify-content: center;
     }
-    
+
     .stat-card {
         margin-bottom: 10px;
     }
-    
+
     .progress-card {
         margin-bottom: 15px;
     }
-    
+
     .deadline-item,
     .activity-item {
         padding: 10px 15px;
     }
-    
+
     /* Trên mobile 3 cột task sẽ xếp dọc */
     .task-panel {
         min-height: auto;

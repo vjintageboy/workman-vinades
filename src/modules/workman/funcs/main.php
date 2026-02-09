@@ -59,27 +59,31 @@ $doing_tasks = $all_tasks['doing'];
 $review_tasks = $all_tasks['review'];
 
 // ============================================================================
-// Lấy thông báo chưa đọc
-// ============================================================================
+// Lấy 5 thông báo mới nhất (cả đã đọc và chưa đọc)
 $notifications = [];
 $sql = 'SELECT n.*, w.title as work_title
         FROM ' . $db_config['prefix'] . '_' . $module_data . '_notifications n
         LEFT JOIN ' . $db_config['prefix'] . '_' . $module_data . ' w ON n.work_id = w.id
-        WHERE n.user_id = ' . $user_id . ' AND n.is_read = 0
+        WHERE n.user_id = ' . $user_id . '
         ORDER BY n.created_at DESC
         LIMIT 5';
+
 try {
     $result = $db->query($sql);
     while ($row = $result->fetch()) {
         $row['created_at_formatted'] = nv_date('d/m/Y H:i', $row['created_at']);
         $row['time_ago'] = workman_time_ago($row['created_at']);
+        // Thêm class để style tin chưa đọc nếu cần
+        $row['status_class'] = ($row['is_read'] == 0) ? 'unread' : 'read';
         $notifications[] = $row;
     }
 } catch (Exception $e) {
     // ignore
 }
 
-$unread_count = count($notifications);
+// Đếm tổng số thông báo chưa đọc
+$sql_count = 'SELECT COUNT(*) FROM ' . $db_config['prefix'] . '_' . $module_data . '_notifications WHERE user_id = ' . $user_id . ' AND is_read = 0';
+$unread_count = $db->query($sql_count)->fetchColumn();
 
 // ============================================================================
 // Lấy deadline sắp tới (trong 3 ngày)

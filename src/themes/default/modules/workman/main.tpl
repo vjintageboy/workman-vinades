@@ -2,8 +2,10 @@
 <div class="workman-dashboard">
     <!-- Header với greeting -->
     <div class="dashboard-header">
-        <h3><i class="fa fa-tachometer"></i> Dashboard công việc</h3>
-        <p class="text-muted">Chào mừng bạn quay trở lại! Đây là tổng quan công việc của bạn.</p>
+        <div class="header-content">
+            <h3><i class="fa fa-tachometer"></i> Dashboard công việc</h3>
+            <p class="text-muted">Chào mừng bạn quay trở lại! Đây là tổng quan công việc của bạn.</p>
+        </div>
     </div>
     
     <!-- Progress + Stats Row -->
@@ -256,7 +258,7 @@
                 </div>
                 <div class="task-panel-body">
                     <!-- BEGIN: notification -->
-                    <div class="notification-item-modern">
+                    <div class="notification-item-modern {NOTIF.status_class}">
                         <div class="notif-icon">
                             <i class="fa fa-info-circle"></i>
                         </div>

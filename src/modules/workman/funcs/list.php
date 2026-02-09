@@ -25,13 +25,24 @@ $user_id = $user_info['userid'];
 // Lấy dữ liệu cho filters
 $status_list = workman_get_status_list();
 
+// Lấy stats để hiển thị số lượng ở quick actions
+$stats = workman_count_tasks_by_status($user_id);
+
 // Filter
 $filter_status = $nv_Request->get_string('status', 'get', '');
+$filter_category = $nv_Request->get_int('category', 'get', 0);
+$filter_priority = $nv_Request->get_string('priority', 'get', '');
 
 // Build WHERE clause
 $where_conditions = ['w.is_deleted = 0', 'w.assigned_to = ' . $user_id];
 if (!empty($filter_status) && isset($status_list[$filter_status])) {
     $where_conditions[] = 'w.status = ' . $db->quote($filter_status);
+}
+if ($filter_category > 0) {
+    $where_conditions[] = 'w.category_id = ' . $filter_category;
+}
+if (!empty($filter_priority)) {
+    $where_conditions[] = 'w.priority = ' . $db->quote($filter_priority);
 }
 $where_clause = implode(' AND ', $where_conditions);
 
@@ -45,6 +56,8 @@ $base_url_params = [
     NV_OP_VARIABLE . '=list'
 ];
 if (!empty($filter_status)) $base_url_params[] = 'status=' . $filter_status;
+if ($filter_category > 0) $base_url_params[] = 'category=' . $filter_category;
+if (!empty($filter_priority)) $base_url_params[] = 'priority=' . $filter_priority;
 $base_url = NV_BASE_SITEURL . 'index.php?' . implode('&', $base_url_params);
 
 // Đếm tổng số
@@ -72,7 +85,8 @@ $sql = 'SELECT w.*, c.title as category_title, c.color as category_color
 try {
     $result = $db->query($sql);
     while ($row = $result->fetch()) {
-        $row['due_date_formatted'] = $row['due_date'] > 0 ? nv_date('d/m/Y', $row['due_date']) : '';
+        // Sử dụng format tương đối cho due_date
+        $row['due_date_formatted'] = $row['due_date'] > 0 ? workman_due_date_relative($row['due_date']) : '';
         $row['is_overdue'] = ($row['due_date'] > 0 && $row['due_date'] < NV_CURRENTTIME && !in_array($row['status'], ['done', 'cancelled']));
         $row['status_text'] = $nv_Lang->getModule('status_' . $row['status']) ?: $row['status'];
         $row['status_class'] = $nv_Lang->getModule('status_class_' . $row['status']) ?: 'secondary';
@@ -95,16 +109,7 @@ $xtpl->assign('LANG', $nv_Lang->getModule());
 $xtpl->assign('GLANG', $nv_Lang->getGlobal());
 $xtpl->assign('FILTER_STATUS', $filter_status);
 $xtpl->assign('TOTAL', $num_items);
-
-// Status options for filter
-foreach ($status_list as $key => $label) {
-    $xtpl->assign('STATUS_OPTION', [
-        'key' => $key,
-        'label' => $label,
-        'selected' => ($filter_status == $key) ? 'selected' : ''
-    ]);
-    $xtpl->parse('main.status_option');
-}
+$xtpl->assign('STATS', $stats);
 
 // URLs
 $url_dashboard = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
@@ -114,6 +119,13 @@ $form_action = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG
 $xtpl->assign('URL_DASHBOARD', $url_dashboard);
 $xtpl->assign('FORM_ACTION', $form_action);
 
+// Active states cho quick actions
+$xtpl->assign('ALL_ACTIVE', empty($filter_status) ? 'active' : '');
+$xtpl->assign('PENDING_ACTIVE', $filter_status === 'pending' ? 'active' : '');
+$xtpl->assign('DOING_ACTIVE', $filter_status === 'doing' ? 'active' : '');
+$xtpl->assign('REVIEW_ACTIVE', $filter_status === 'review' ? 'active' : '');
+$xtpl->assign('DONE_ACTIVE', $filter_status === 'done' ? 'active' : '');
+
 // Tasks
 foreach ($tasks as $task) {
     $task['url_detail'] = $url_detail_base . $task['id'];
@@ -121,6 +133,14 @@ foreach ($tasks as $task) {
     
     if ($task['is_overdue']) {
         $xtpl->parse('main.task.overdue');
+    }
+    
+    if (!empty($task['category_title'])) {
+        $xtpl->parse('main.task.category');
+    }
+    
+    if ($task['due_date'] > 0) {
+        $xtpl->parse('main.task.due_date');
     }
     
     $xtpl->parse('main.task');
