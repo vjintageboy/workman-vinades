@@ -376,4 +376,59 @@ function clearPreview() {
     document.getElementById('attachment_file').value = '';
 }
 {/literal}
+
+// Load CKEditor CSS and JS if not already loaded, then init editors
+(function() {
+    function initDescEditor() {
+        var descTextarea = document.getElementById('desc_input');
+        if (!descTextarea) return;
+
+        ClassicEditor
+        .create(descTextarea, {
+            language: '{$smarty.const.NV_LANG_INTERFACE}',
+            toolbar: {
+                items: [
+                    'undo', 'redo', '|',
+                    'heading', '|',
+                    'bold', 'italic', 'underline', '|',
+                    'link', 'bulletedList', 'numberedList', '|',
+                    'blockQuote', 'insertTable'
+                ]
+            },
+            removePlugins: ['NVBox']
+        })
+        .then(editor => {
+            var form = descTextarea.closest('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    descTextarea.value = editor.getData();
+                });
+            }
+        })
+        .catch(error => console.error(error));
+    }
+
+    if (typeof ClassicEditor !== 'undefined') {
+        initDescEditor();
+    } else {
+        var ckCSS = document.createElement('link');
+        ckCSS.rel = 'stylesheet';
+        ckCSS.href = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/ckeditor.css?t={$smarty.const.NV_CURRENTTIME}';
+        document.head.appendChild(ckCSS);
+
+        var ckJS = document.createElement('script');
+        ckJS.src = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/ckeditor.js?t={$smarty.const.NV_CURRENTTIME}';
+        ckJS.onload = function() {
+            var ckLang = document.createElement('script');
+            ckLang.src = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/language/{$smarty.const.NV_LANG_INTERFACE}.js?t={$smarty.const.NV_CURRENTTIME}';
+            ckLang.onload = function() {
+                initDescEditor();
+            };
+            document.body.appendChild(ckLang);
+        };
+        document.body.appendChild(ckJS);
+    }
+})();
+</script>
+
 </script>

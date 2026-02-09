@@ -25,7 +25,7 @@ if ($id <= 0) {
 // Xử lý POST comment từ admin
 // ============================================================================
 if ($nv_Request->isset_request('submit_comment', 'post')) {
-    $content = $nv_Request->get_textarea('content', '', 'post');
+    $content = $nv_Request->get_editor('content', '', NV_ALLOWED_HTML_TAGS);
     
     if (!empty(trim($content))) {
         $attachment = '';

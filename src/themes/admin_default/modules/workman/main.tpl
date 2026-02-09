@@ -198,8 +198,8 @@
                     </td>
                     <td class="text-center">{ROW.id}</td>
                     <td>
-                        <strong>{ROW.title}</strong>
-                        <br><small class="text-muted">{ROW.description}</small>
+                        <strong>{ROW.title|noescape}</strong>
+                        <br><small class="text-muted">{ROW.description|noescape}</small>
                     </td>
                     <td class="text-center">
                         <span class="label" style="background-color: {ROW.category_color};">{ROW.category_title}</span>

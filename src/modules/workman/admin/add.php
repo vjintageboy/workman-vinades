@@ -86,7 +86,7 @@ $success = '';
 $submit_action = $nv_Request->get_int('submit', 'post', 0);
 if ($submit_action > 0) {
     $request_data['title'] = $nv_Request->get_string('title', 'post', '');
-    $request_data['description'] = $nv_Request->get_textarea('description', '', 'post');
+    $request_data['description'] = $nv_Request->get_editor('description', '', NV_ALLOWED_HTML_TAGS);
     $request_data['status'] = $nv_Request->get_string('status', 'post', 'draft');
     $request_data['priority'] = $nv_Request->get_string('priority', 'post', 'normal');
     $request_data['category_id'] = $nv_Request->get_int('category_id', 'post', 0);

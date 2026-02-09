@@ -74,7 +74,7 @@
     <!-- END: pagination -->
 </div>
 
-<style>
+<!-- <style>
 /* Task Item Card */
 .task-item-card {
     display: flex;
@@ -255,5 +255,5 @@
     border-radius: 8px;
     padding: 10px 20px;
 }
-</style>
+</style> -->
 <!-- END: main -->

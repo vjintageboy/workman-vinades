@@ -122,6 +122,10 @@ $lang_module['log_priority_changed'] = 'Thay đổi độ ưu tiên';
 $lang_module['log_assigned'] = 'Giao việc';
 $lang_module['log_commented'] = 'Thêm bình luận';
 $lang_module['log_deleted'] = 'Xóa công việc';
+$lang_module['log_submitted'] = 'Đã nộp kết quả';
+$lang_module['log_submission_deleted'] = 'Đã xóa lần nộp kết quả';
+$lang_module['log_file_uploaded'] = 'Đã upload file';
+$lang_module['log_file_deleted'] = 'Đã xóa file';
 $lang_module['activity_history'] = 'Lịch sử hoạt động';
 
 // Quick change

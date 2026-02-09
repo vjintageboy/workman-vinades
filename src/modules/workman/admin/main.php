@@ -242,7 +242,7 @@ while ($row = $result->fetch()) {
     $xtpl->assign('ROW', [
         'id' => $row['id'],
         'title' => $row['title'],
-        'description' => nv_clean60($row['description'], 80),
+        'description' => $row['description'],
         'status_text' => $status_text,
         'status_class' => $status_class,
         'priority_text' => $priority_text,

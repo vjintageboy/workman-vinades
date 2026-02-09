@@ -15,10 +15,10 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
 
 $module_version = [
     'name' => 'Workman',
-    'modfuncs' => 'main,list,detail,comment,update',
+    'modfuncs' => 'main,list,detail,comment,update,submission',
     'is_sysmod' => 0,
     'virtual' => 1,
-    'version' => '1.0.1',
+    'version' => '1.0.2',
     'date' => 'Friday, January 22, 2026 4:00:00 PM GMT+07:00',
     'author' => 'Nicotine',
     'note' => '',

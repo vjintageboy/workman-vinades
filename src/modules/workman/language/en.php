@@ -116,9 +116,14 @@ $lang_module['priority_class_urgent'] = 'danger';
 $lang_module['log_created'] = 'Created task';
 $lang_module['log_updated'] = 'Updated task';
 $lang_module['log_status_changed'] = 'Changed status';
+$lang_module['log_priority_changed'] = 'Changed priority';
 $lang_module['log_assigned'] = 'Assigned task';
 $lang_module['log_commented'] = 'Added comment';
 $lang_module['log_deleted'] = 'Deleted task';
+$lang_module['log_submitted'] = 'Submitted result';
+$lang_module['log_submission_deleted'] = 'Deleted submission';
+$lang_module['log_file_uploaded'] = 'Uploaded file';
+$lang_module['log_file_deleted'] = 'Deleted file';
 $lang_module['activity_history'] = 'Activity history';
 
 // ============================================================================

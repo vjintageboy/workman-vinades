@@ -157,8 +157,8 @@
                         <form method="post" action="{$URL_COMMENT}" enctype="multipart/form-data">
                             <input type="hidden" name="work_id" value="{$TASK_ID}">
                             <div class="mb-3">
-                                <textarea name="content" class="form-control" rows="4"
-                                    placeholder="{$LANG->getModule('comment_placeholder')}" required></textarea>
+                                <textarea name="content" id="adminCommentContent" class="form-control" rows="4"
+                                    placeholder="{$LANG->getModule('comment_placeholder')}"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label"><i class="fa-solid fa-paperclip"></i>
@@ -189,8 +189,8 @@
                                 <span class="text-info">{$LOG.action_text}</span>
                                 {if !empty($LOG.old_value) || !empty($LOG.new_value)}
                                 <div class="small mt-1">
-                                    {if !empty($LOG.old_value)}<span class="text-danger">{$LOG.old_value}</span> → {/if}
-                                    <span class="text-success">{$LOG.new_value}</span>
+                                    {if !empty($LOG.old_value)}<span class="text-danger">{$LOG.old_value|raw}</span> → {/if}
+                                    <span class="text-success">{$LOG.new_value|raw}</span>
                                 </div>
                                 {/if}
                                 <small class="text-muted d-block mt-1">
@@ -292,4 +292,59 @@
         };
         xhr.send('action=update_priority&id={$TASK_ID}&priority=' + newPriority);
     }
+
+    // Initialize CKEditor for comment form
+    (function() {
+        function initCommentEditor() {
+            var commentTextarea = document.getElementById('adminCommentContent');
+            if (!commentTextarea) return;
+
+            ClassicEditor
+            .create(commentTextarea, {
+                language: '{$smarty.const.NV_LANG_INTERFACE}',
+                toolbar: {
+                    items: [
+                        'bold', 'italic', 'underline', '|',
+                        'link', 'bulletedList', 'numberedList'
+                    ]
+                },
+                removePlugins: ['NVBox', 'ImageUpload']
+            })
+            .then(editor => {
+                var form = commentTextarea.closest('form');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        commentTextarea.value = editor.getData();
+                        if (!commentTextarea.value.replace(/<[^>]*>/g, '').trim()) {
+                            e.preventDefault();
+                            alert('Vui lòng nhập nội dung bình luận');
+                            editor.focus();
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+        }
+
+        if (typeof ClassicEditor !== 'undefined') {
+            initCommentEditor();
+        } else {
+            var ckCSS = document.createElement('link');
+            ckCSS.rel = 'stylesheet';
+            ckCSS.href = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/ckeditor.css?t={$smarty.const.NV_CURRENTTIME}';
+            document.head.appendChild(ckCSS);
+
+            var ckJS = document.createElement('script');
+            ckJS.src = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/ckeditor.js?t={$smarty.const.NV_CURRENTTIME}';
+            ckJS.onload = function() {
+                var ckLang = document.createElement('script');
+                ckLang.src = '{$smarty.const.NV_STATIC_URL}{$smarty.const.NV_EDITORSDIR}/ckeditor5-classic/language/{$smarty.const.NV_LANG_INTERFACE}.js?t={$smarty.const.NV_CURRENTTIME}';
+                ckLang.onload = function() {
+                    initCommentEditor();
+                };
+                document.body.appendChild(ckLang);
+            };
+            document.body.appendChild(ckJS);
+        }
+    })();
 </script>

@@ -42,7 +42,7 @@ if ($nv_Request->get_string('REQUEST_METHOD', 'server') != 'POST') {
 }
 
 $work_id = $nv_Request->get_int('work_id', 'post', 0);
-$content = $nv_Request->get_textarea('content', '', 'post');
+$content = $nv_Request->get_editor('content', '', NV_ALLOWED_HTML_TAGS);
 $is_ajax = $nv_Request->get_int('ajax', 'post', 0);
 
 if ($work_id <= 0) {
@@ -155,7 +155,7 @@ try {
             'message' => 'Thêm bình luận thành công',
             'comment' => [
                 'user_fullname' => $user_fullname,
-                'content' => nl2br(nv_htmlspecialchars($content)),
+                'content' => $content,
                 'created_at_formatted' => nv_date('d/m/Y H:i', NV_CURRENTTIME),
                 'attachment' => $attachment,
                 'attachment_name' => !empty($attachment) ? basename($attachment) : '',

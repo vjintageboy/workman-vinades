@@ -21,8 +21,8 @@ require_once NV_ROOTDIR . '/modules/' . $module_file . '/functions.php';
 $user_id = $user_info['userid'];
 
 // Chỉ xử lý POST request
-if ($nv_Request->get_string('method', 'server') != 'POST') {
-    workman_json_response(['error' => 1, 'message' => 'Invalid request']);
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    workman_json_response(['error' => 1, 'message' => 'Invalid request method']);
 }
 
 $id = $nv_Request->get_int('id', 'post', 0);
@@ -52,11 +52,39 @@ if (!workman_validate_status_transition($old_status, $new_status, false)) {
     workman_json_response(['error' => 1, 'message' => $nv_Lang->getModule('error_invalid_transition')]);
 }
 
+// Kiểm tra đặc biệt khi chuyển sang review - phải có ít nhất 1 file đã nộp
+if ($new_status == 'review') {
+    $review_check = workman_can_send_review($id);
+    if (!$review_check['can_review']) {
+        workman_json_response([
+            'error' => 1, 
+            'message' => $review_check['reason'],
+            'need_submit' => true // Flag để frontend biết cần nộp kết quả trước
+        ]);
+    }
+}
+
 // Cập nhật status
 try {
+    // Xây dựng câu SQL update
+    $update_fields = [
+        'status = ' . $db->quote($new_status),
+        'updated_at = ' . NV_CURRENTTIME,
+        'updated_by = ' . $user_id
+    ];
+    
+    // Nếu chuyển từ pending → doing: set start_at
+    if ($old_status == 'pending' && $new_status == 'doing') {
+        $update_fields[] = 'start_at = ' . NV_CURRENTTIME;
+    }
+    
+    // Nếu chuyển sang done: set completed_at
+    if ($new_status == 'done') {
+        $update_fields[] = 'completed_at = ' . NV_CURRENTTIME;
+    }
+    
     $sql = 'UPDATE ' . $db_config['prefix'] . '_' . $module_data . ' SET 
-            status = ' . $db->quote($new_status) . ',
-            updated_at = ' . NV_CURRENTTIME . '
+            ' . implode(', ', $update_fields) . '
             WHERE id = ' . $id;
     $db->exec($sql);
     
@@ -86,3 +114,4 @@ try {
 } catch (Exception $e) {
     workman_json_response(['error' => 1, 'message' => 'Database error: ' . $e->getMessage()]);
 }
+

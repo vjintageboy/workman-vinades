@@ -12,7 +12,8 @@ if (!defined('NV_IS_MOD_WORKMAN')) {
 
 // Kiểm tra user đã đăng nhập
 if (!defined('NV_IS_USER')) {
-    nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=users&' . NV_OP_VARIABLE . '=login&nv_redirect=' . nv_redirect_encrypt(NV_MY_DOMAIN . NV_REQUEST_URI));
+    $redirect = nv_url_rewrite(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=users&' . NV_OP_VARIABLE . '=login', true);
+    nv_redirect_location($redirect);
 }
 
 $page_title = $nv_Lang->getModule('dashboard');

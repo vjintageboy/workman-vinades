@@ -18,6 +18,8 @@ $sql_drop_module = [];
 // Drop tables in reverse order (child tables first)
 $sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_notifications;';
 $sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_logs;';
+$sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_submission_files;';
+$sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_submissions;';
 $sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_comments;';
 $sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . '_categories;';
 $sql_drop_module[] = 'DROP TABLE IF EXISTS ' . $db_config['prefix'] . '_' . $module_data . ';';
@@ -34,12 +36,14 @@ $sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_da
     `status` varchar(50) DEFAULT 'draft' COMMENT 'Trạng thái: draft, pending, doing, review, done, cancelled',
     `priority` varchar(50) DEFAULT 'normal' COMMENT 'Độ ưu tiên: low, normal, high, urgent',
     `due_date` int(11) DEFAULT 0 COMMENT 'Ngày hết hạn (unix timestamp)',
-    `attachment` varchar(255) DEFAULT '' COMMENT 'File đính kèm',
-    `created_by` int(11) UNSIGNED DEFAULT 0 COMMENT 'ID người tạo',
-    `assigned_to` int(11) UNSIGNED DEFAULT 0 COMMENT 'ID người được giao',
+    `start_at` int(11) DEFAULT NULL COMMENT 'Thời gian bắt đầu làm (khi chuyển pending -> doing)',
+    `attachment` varchar(255) DEFAULT '' COMMENT 'File đính kèm từ người giao',
+    `created_by` int(11) UNSIGNED DEFAULT 0 COMMENT 'ID người tạo/giao việc',
+    `assigned_to` int(11) UNSIGNED DEFAULT 0 COMMENT 'ID người được giao/thực hiện',
     `category_id` int(11) UNSIGNED DEFAULT NULL COMMENT 'ID danh mục',
     `created_at` int(11) DEFAULT 0 COMMENT 'Thời gian tạo',
     `updated_at` int(11) DEFAULT 0 COMMENT 'Thời gian cập nhật',
+    `updated_by` int(11) UNSIGNED DEFAULT NULL COMMENT 'ID người cập nhật cuối',
     `completed_at` int(11) DEFAULT NULL COMMENT 'Thời gian hoàn thành',
     `is_deleted` tinyint(1) DEFAULT 0 COMMENT 'Đã xóa mềm',
     `deleted_at` int(11) DEFAULT NULL COMMENT 'Thời gian xóa',
@@ -67,7 +71,7 @@ $sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_da
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 // ============================================================================
-// Bảng bình luận: workman_comments
+// Bảng bình luận: workman_comments - Chỉ dùng cho trao đổi/thảo luận
 // ============================================================================
 $sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_data . "_comments (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -82,19 +86,61 @@ $sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_da
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 // ============================================================================
+// Bảng kết quả công việc: workman_submissions
+// Lưu các lần nộp kết quả của người thực hiện
+// ============================================================================
+$sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_data . "_submissions (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `work_id` int(11) UNSIGNED NOT NULL COMMENT 'ID công việc',
+    `user_id` int(11) UNSIGNED NOT NULL COMMENT 'ID người nộp',
+    `description` text COMMENT 'Mô tả kết quả công việc',
+    `created_at` int(11) DEFAULT 0 COMMENT 'Thời gian nộp',
+    PRIMARY KEY (`id`),
+    KEY `idx_work_id` (`work_id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+// ============================================================================
+// Bảng file kết quả: workman_submission_files
+// Lưu các file đính kèm trong mỗi lần nộp kết quả
+// ============================================================================
+$sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_data . "_submission_files (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `submission_id` int(11) UNSIGNED NOT NULL COMMENT 'ID lần nộp kết quả',
+    `work_id` int(11) UNSIGNED NOT NULL COMMENT 'ID công việc (denormalized for query)',
+    `user_id` int(11) UNSIGNED NOT NULL COMMENT 'ID người upload',
+    `filename` varchar(255) NOT NULL COMMENT 'Tên file gốc',
+    `filepath` varchar(500) NOT NULL COMMENT 'Đường dẫn file trên server',
+    `filesize` int(11) UNSIGNED DEFAULT 0 COMMENT 'Kích thước file (bytes)',
+    `filetype` varchar(100) DEFAULT '' COMMENT 'MIME type',
+    `created_at` int(11) DEFAULT 0 COMMENT 'Thời gian upload',
+    `is_deleted` tinyint(1) DEFAULT 0 COMMENT 'Đã xóa: 0=không, 1=đã xóa',
+    `deleted_at` int(11) DEFAULT NULL COMMENT 'Thời gian xóa',
+    PRIMARY KEY (`id`),
+    KEY `idx_submission_id` (`submission_id`),
+    KEY `idx_work_id` (`work_id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_is_deleted` (`is_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+// ============================================================================
 // Bảng logs: workman_logs - Ghi lại lịch sử thay đổi
 // ============================================================================
 $sql_create_module[] = 'CREATE TABLE ' . $db_config['prefix'] . '_' . $module_data . "_logs (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `work_id` int(11) UNSIGNED NOT NULL COMMENT 'ID công việc',
     `user_id` int(11) UNSIGNED NOT NULL COMMENT 'ID người thực hiện',
-    `action` varchar(50) NOT NULL COMMENT 'Hành động: created, updated, status_changed, assigned, commented, deleted',
+    `action` varchar(50) NOT NULL COMMENT 'Hành động: created, updated, status_changed, assigned, commented, submitted, file_uploaded, file_deleted, deleted',
     `old_value` varchar(255) DEFAULT '' COMMENT 'Giá trị cũ',
     `new_value` varchar(255) DEFAULT '' COMMENT 'Giá trị mới',
+    `extra_data` text COMMENT 'Dữ liệu bổ sung (JSON)',
     `created_at` int(11) DEFAULT 0 COMMENT 'Thời gian',
     PRIMARY KEY (`id`),
     KEY `idx_work_id` (`work_id`),
-    KEY `idx_user_id` (`user_id`)
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_action` (`action`),
+    KEY `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 // ============================================================================

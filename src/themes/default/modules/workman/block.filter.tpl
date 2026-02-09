@@ -71,7 +71,7 @@
     </div>
 </div>
 
-<style>
+<!-- <style>
 .workman-filter-block {
     background: #fff;
     border-radius: 12px;
@@ -179,5 +179,5 @@
 .filter-actions .btn {
     border-radius: 8px;
 }
-</style>
+</style> -->
 <!-- END: main -->
